@@ -1,7 +1,7 @@
 import process from "node:process";
 
 // import tty from "node:tty";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { getSupportedLevel } from "../src";
 
 // const ORIGINAL_TTY = tty.isatty;
@@ -15,6 +15,14 @@ beforeEach(() => {
 });
 
 describe("get supported color mode", () => {
+  beforeEach(() => {
+    console.log("ENV BEFORE", process.env);
+  });
+
+  afterEach(() => {
+    console.log("ENV AFTER", process.env);
+  });
+
   it("should return `0` if NO_COLOR is in env", () => {
     process.env = {
       NO_COLOR: "1",

@@ -8,9 +8,9 @@ import { release } from "node:os";
  */
 export function getSupportedLevel(): 0 | 1 | 2 | 3 {
   const {
-    env = {},
-    argv = [],
-    platform = "",
+    env,
+    argv,
+    platform,
   } = process;
 
   if ("NO_COLOR" in env || argv.includes("--no-color")) {
@@ -50,7 +50,7 @@ export function getSupportedLevel(): 0 | 1 | 2 | 3 {
       return 3;
     }
 
-    if (["TRAVIS", "CIRCLECI", "APPVEYOR", "GITLAB_CI", "BUILDKITE", "DRONE"].some((ci) => ci in env) || env.CI_NAME === "codeship") {
+    if (["TRAVIS", "CIRCLECI", "APPVEYOR", "GITLAB_CI", "BUILDKITE", "DRONE"].some((ci) => env[ci]) || env.CI_NAME === "codeship") {
       return 1;
     }
 
