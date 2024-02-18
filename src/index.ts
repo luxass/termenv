@@ -33,18 +33,6 @@ export function getSupportedLevel(): 0 | 1 | 2 | 3 {
     return 0;
   }
 
-  if (platform === "win32") {
-    const osRelease = release().split(".");
-    if (
-      Number(osRelease[0]) >= 10
-      && Number(osRelease[2]) >= 10_586
-    ) {
-      return Number(osRelease[2]) >= 14_931 ? 3 : 2;
-    }
-
-    return 1;
-  }
-
   if ("CI" in env) {
     if ("GITHUB_ACTIONS" in env || "GITEA_ACTIONS" in env) {
       return 3;
@@ -55,6 +43,18 @@ export function getSupportedLevel(): 0 | 1 | 2 | 3 {
     }
 
     return 0;
+  }
+
+  if (platform === "win32") {
+    const osRelease = release().split(".");
+    if (
+      Number(osRelease[0]) >= 10
+      && Number(osRelease[2]) >= 10_586
+    ) {
+      return Number(osRelease[2]) >= 14_931 ? 3 : 2;
+    }
+
+    return 1;
   }
 
   if ("TEAMCITY_VERSION" in env) {
