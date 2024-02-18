@@ -10,7 +10,7 @@ import {
   it,
 } from "vitest";
 import {
-  getSupportedColorMode,
+  getSupportedLevel,
   is16ColorSupported,
   is256ColorSupported,
   isColorsSupported,
@@ -49,7 +49,7 @@ describe("get supported color mode", () => {
     globalThis.navigator.userAgentData = {
       brands: [{ brand: "Chromium", version: "94" }],
     };
-    expect(getSupportedColorMode()).toBe(3);
+    expect(getSupportedLevel()).toBe(3);
   });
 
   it("should return `3` if userAgent contains Chrome or Chromium and version is equal to 94", () => {
@@ -57,7 +57,7 @@ describe("get supported color mode", () => {
       brands: [{ brand: "Chromium", version: "94" }],
     };
     setUserAgent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36");
-    expect(getSupportedColorMode()).toBe(3);
+    expect(getSupportedLevel()).toBe(3);
   });
 
   it("should return `0` if userAgentData contains Chromium with version less than or equal to 93", () => {
@@ -65,7 +65,7 @@ describe("get supported color mode", () => {
       brands: [{ brand: "Chromium", version: "93" }],
     };
 
-    expect(getSupportedColorMode()).toBe(0);
+    expect(getSupportedLevel()).toBe(0);
   });
 
   it("should return `1` if userAgent contains Chrome or Chromium and version is equal to 93", () => {
@@ -74,26 +74,26 @@ describe("get supported color mode", () => {
     };
     setUserAgent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36");
 
-    expect(getSupportedColorMode()).toBe(1);
+    expect(getSupportedLevel()).toBe(1);
   });
 
   it("should return `1` if userAgent contains Chrome or Chromium", () => {
     setUserAgent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36");
 
-    expect(getSupportedColorMode()).toBe(1);
+    expect(getSupportedLevel()).toBe(1);
   });
 
   it("should return `0` if userAgent does not contain Chrome or Chromium", () => {
     setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Safari/537.3");
 
-    expect(getSupportedColorMode()).toBe(0);
+    expect(getSupportedLevel()).toBe(0);
   });
 
   it("should return `0` if navigator is not defined", () => {
     // @ts-expect-error navigator can't be set to undefined..
     delete globalThis.navigator;
 
-    expect(getSupportedColorMode()).toBe(0);
+    expect(getSupportedLevel()).toBe(0);
   });
 });
 

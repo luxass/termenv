@@ -10,14 +10,14 @@ npm install termenv
 
 ```ts
 import {
-  getSupportedColorMode,
+  getSupportedLevel,
   is16ColorSupported,
   is256ColorSupported,
   isColorsSupported,
   isTrueColorSupported
 } from "termenv";
 
-console.log(getSupportedColorMode()); // => 3 | 2 | 1 | 0
+console.log(getSupportedLevel()); // => 3 | 2 | 1 | 0
 // 3: 24-bit color support (16m colors)
 // 2: 8-bit color support (256 colors)
 // 1: 4-bit color support (16 colors)

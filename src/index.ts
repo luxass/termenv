@@ -6,7 +6,7 @@ import { release } from "node:os";
  * Get the supported color mode based on the environment
  * @returns {0 | 1 | 2 | 3} The supported color mode
  */
-export function getSupportedColorMode(): 0 | 1 | 2 | 3 {
+export function getSupportedLevel(): 0 | 1 | 2 | 3 {
   const {
     env = {},
     argv = [],
@@ -93,7 +93,7 @@ export function getSupportedColorMode(): 0 | 1 | 2 | 3 {
  * ```
  */
 export function isColorsSupported(): boolean {
-  return getSupportedColorMode() > 0;
+  return getSupportedLevel() > 0;
 }
 
 /**
@@ -101,7 +101,7 @@ export function isColorsSupported(): boolean {
  * @returns {boolean} Whether the environment supports true color
  */
 export function isTrueColorSupported(): boolean {
-  return getSupportedColorMode() >= 3;
+  return getSupportedLevel() >= 3;
 }
 
 /**
@@ -109,7 +109,7 @@ export function isTrueColorSupported(): boolean {
  * @returns {boolean} Whether the environment supports 256 colors
  */
 export function is256ColorSupported(): boolean {
-  return getSupportedColorMode() >= 2;
+  return getSupportedLevel() >= 2;
 }
 
 /**
@@ -117,5 +117,5 @@ export function is256ColorSupported(): boolean {
  * @returns {boolean} Whether the environment supports 16 colors
  */
 export function is16ColorSupported(): boolean {
-  return getSupportedColorMode() >= 1;
+  return getSupportedLevel() >= 1;
 }
