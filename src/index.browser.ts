@@ -15,25 +15,25 @@ declare global {
 
 /**
  * Get the supported color mode based on the environment
- * @returns {"truecolor" | "256" | "16" | "none"} The supported color mode
+ * @returns {0 | 1 | 2 | 3} The supported color mode
  */
-export function getSupportedColorMode(): "truecolor" | "256" | "16" | "none" {
+export function getSupportedColorMode(): 0 | 1 | 2 | 3 {
   if (!globalThis.navigator) {
-    return "none";
+    return 0;
   }
 
   if (globalThis.navigator?.userAgentData) {
     const brand = navigator.userAgentData?.brands.find(({ brand }) => brand === "Chromium");
     if (brand && +brand?.version > 93) {
-      return "truecolor";
+      return 3;
     }
   }
 
   if (/\b(Chrome|Chromium)\//.test(navigator.userAgent)) {
-    return "16";
+    return 1;
   }
 
-  return "none";
+  return 0;
 }
 
 /**
@@ -49,7 +49,7 @@ export function getSupportedColorMode(): "truecolor" | "256" | "16" | "none" {
  * ```
  */
 export function isColorsSupported(): boolean {
-  return getSupportedColorMode() !== "none";
+  return getSupportedColorMode() > 0;
 }
 
 /**
@@ -57,7 +57,7 @@ export function isColorsSupported(): boolean {
  * @returns {boolean} Whether the environment supports true color
  */
 export function isTrueColorSupported(): boolean {
-  return getSupportedColorMode() === "truecolor";
+  return getSupportedColorMode() === 3;
 }
 
 /**
@@ -65,7 +65,7 @@ export function isTrueColorSupported(): boolean {
  * @returns {boolean} Whether the environment supports 256 colors
  */
 export function is256ColorSupported(): boolean {
-  return getSupportedColorMode() === "256";
+  return getSupportedColorMode() >= 2;
 }
 
 /**
@@ -73,5 +73,5 @@ export function is256ColorSupported(): boolean {
  * @returns {boolean} Whether the environment supports 16 colors
  */
 export function is16ColorSupported(): boolean {
-  return getSupportedColorMode() === "16";
+  return getSupportedColorMode() >= 1;
 }

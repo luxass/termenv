@@ -4,9 +4,9 @@ import { release } from "node:os";
 
 /**
  * Get the supported color mode based on the environment
- * @returns {"truecolor" | "256" | "16" | "none"} The supported color mode
+ * @returns {0 | 1 | 2 | 3} The supported color mode
  */
-export function getSupportedColorMode(): "truecolor" | "256" | "16" | "none" {
+export function getSupportedColorMode(): 0 | 1 | 2 | 3 {
   const {
     env = {},
     argv = [],
@@ -14,23 +14,23 @@ export function getSupportedColorMode(): "truecolor" | "256" | "16" | "none" {
   } = process;
 
   if ("NO_COLOR" in env || argv.includes("--no-color")) {
-    return "none";
+    return 0;
   }
 
   if ("FORCE_COLOR" in env || argv.includes("--color")) {
-    return "truecolor";
+    return 3;
   }
 
   if ("TF_BUILD" in env && "AGENT_NAME" in env) {
-    return "16";
+    return 1;
   }
 
   if (!tty.isatty(1) && !tty.isatty(2)) {
-    return "none";
+    return 0;
   }
 
   if (env.TERM === "dumb") {
-    return "none";
+    return 0;
   }
 
   if (platform === "win32") {
@@ -39,45 +39,45 @@ export function getSupportedColorMode(): "truecolor" | "256" | "16" | "none" {
       Number(osRelease[0]) >= 10
       && Number(osRelease[2]) >= 10_586
     ) {
-      return Number(osRelease[2]) >= 14_931 ? "truecolor" : "256";
+      return Number(osRelease[2]) >= 14_931 ? 3 : 2;
     }
 
-    return "16";
+    return 1;
   }
 
   if ("CI" in env) {
     if ("GITHUB_ACTIONS" in env || "GITEA_ACTIONS" in env) {
-      return "truecolor";
+      return 3;
     }
 
     if (["TRAVIS", "CIRCLECI", "APPVEYOR", "GITLAB_CI", "BUILDKITE", "DRONE"].some((ci) => ci in env) || env.CI_NAME === "codeship") {
-      return "16";
+      return 1;
     }
 
-    return "none";
+    return 0;
   }
 
   if ("TEAMCITY_VERSION" in env) {
-    return /^(9\.(0*[1-9]\d*)\.|\d{2,}\.)/.test(env.TEAMCITY_VERSION!) ? "16" : "none";
+    return /^(9\.(0*[1-9]\d*)\.|\d{2,}\.)/.test(env.TEAMCITY_VERSION!) ? 1 : 0;
   }
 
   if (env.COLORTERM === "truecolor") {
-    return "truecolor";
+    return 3;
   }
 
   if (/-256(color)?$/i.test(env.TERM!)) {
-    return "256";
+    return 2;
   }
 
   if (/^screen|^xterm|^vt100|^vt220|^rxvt|color|ansi|cygwin|linux/i.test(env.TERM!)) {
-    return "16";
+    return 1;
   }
 
   if ("COLORTERM" in env) {
-    return "16";
+    return 1;
   }
 
-  return "none";
+  return 0;
 }
 
 /**
@@ -93,7 +93,7 @@ export function getSupportedColorMode(): "truecolor" | "256" | "16" | "none" {
  * ```
  */
 export function isColorsSupported(): boolean {
-  return getSupportedColorMode() !== "none";
+  return getSupportedColorMode() > 0;
 }
 
 /**
@@ -101,7 +101,7 @@ export function isColorsSupported(): boolean {
  * @returns {boolean} Whether the environment supports true color
  */
 export function isTrueColorSupported(): boolean {
-  return getSupportedColorMode() === "truecolor";
+  return getSupportedColorMode() >= 3;
 }
 
 /**
@@ -109,7 +109,7 @@ export function isTrueColorSupported(): boolean {
  * @returns {boolean} Whether the environment supports 256 colors
  */
 export function is256ColorSupported(): boolean {
-  return getSupportedColorMode() === "256";
+  return getSupportedColorMode() >= 2;
 }
 
 /**
@@ -117,5 +117,5 @@ export function is256ColorSupported(): boolean {
  * @returns {boolean} Whether the environment supports 16 colors
  */
 export function is16ColorSupported(): boolean {
-  return getSupportedColorMode() === "16";
+  return getSupportedColorMode() >= 1;
 }
