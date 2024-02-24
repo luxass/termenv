@@ -164,4 +164,59 @@ describe("get supported color mode", () => {
 
     expect(getSupportedLevel()).toBe(1);
   });
+
+  describe.runIf(platform === "win32")("windows platform", () => {
+    it("return level 1 if windows 10 build earlier than 10586", () => {
+      Object.defineProperty(process, "platform", {
+        value: "win32",
+      });
+
+      Object.defineProperty(process, "release", {
+        value: "10.0.10420",
+      });
+
+      expect(getSupportedLevel()).toBe(1);
+    });
+
+    it("return level 2 if windows 10 build 10586 or later", () => {
+      Object.defineProperty(process, "platform", {
+        value: "win32",
+      });
+
+      Object.defineProperty(process, "release", {
+        value: "10.0.10586",
+      });
+
+      expect(getSupportedLevel()).toBe(2);
+    });
+
+    it("return level 3 if windows 10 build 14931 or later", () => {
+      Object.defineProperty(process, "platform", {
+        value: "win32",
+      });
+
+      Object.defineProperty(process, "release", {
+        value: "10.0.14931",
+      });
+
+      expect(getSupportedLevel()).toBe(3);
+    });
+  });
+
+  it("return false when `TERM` is set to dumb", () => {
+    process.env = {
+      TERM: "dumb",
+    };
+
+    expect(getSupportedLevel()).toBe(0);
+  });
+
+  it("return level 1 if `TERM` is set to dumb when `FORCE_COLOR` is set", () => {
+    process.env = {
+      TERM: "dumb",
+      FORCE_COLOR: "1",
+    };
+
+    expect(getSupportedLevel()).toBe(1);
+  });
 });
