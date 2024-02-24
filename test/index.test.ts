@@ -211,12 +211,12 @@ describe("get supported color mode", () => {
     expect(getSupportedLevel()).toBe(0);
   });
 
-  it("return level 1 if `TERM` is set to dumb when `FORCE_COLOR` is set", () => {
+  it("return level 3 if `TERM` is set to dumb when `FORCE_COLOR` is set", () => {
     process.env = {
       TERM: "dumb",
       FORCE_COLOR: "1",
     };
 
-    expect(getSupportedLevel()).toBe(1);
+    expect(getSupportedLevel()).toBe(3);
   });
 });
