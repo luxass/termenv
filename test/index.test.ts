@@ -1,4 +1,4 @@
-import process from "node:process";
+import process, { platform } from "node:process";
 
 import tty from "node:tty";
 import { beforeEach, describe, expect, it } from "vitest";
@@ -125,6 +125,13 @@ describe("get supported color mode", () => {
       TEAMCITY_VERSION: "9.0.5 (build 32523)",
     };
 
+    if (platform === "win32") {
+      // set platform to linux
+      Object.defineProperty(process, "platform", {
+        value: "linux",
+      });
+    }
+
     expect(getSupportedLevel()).toBe(0);
   });
 
@@ -133,6 +140,13 @@ describe("get supported color mode", () => {
       TEAMCITY_VERSION: "2023.11.3 (build 147512)",
     };
 
+    if (platform === "win32") {
+      // set platform to linux
+      Object.defineProperty(process, "platform", {
+        value: "linux",
+      });
+    }
+
     expect(getSupportedLevel()).toBe(1);
   });
 
@@ -140,6 +154,13 @@ describe("get supported color mode", () => {
     process.env = {
       TEAMCITY_VERSION: "9.1.0 (build 32523)",
     };
+
+    if (platform === "win32") {
+      // set platform to linux
+      Object.defineProperty(process, "platform", {
+        value: "linux",
+      });
+    }
 
     expect(getSupportedLevel()).toBe(1);
   });
