@@ -1,6 +1,6 @@
 import tty from "node:tty";
 import process from "node:process";
-import { release } from "node:os";
+import os from "node:os";
 
 /**
  * Get the supported color mode based on the environment
@@ -46,7 +46,7 @@ export function getSupportedLevel(): 0 | 1 | 2 | 3 {
   }
 
   if (platform === "win32") {
-    const osRelease = release().split(".");
+    const osRelease = os.release().split(".");
     if (
       Number(osRelease[0]) >= 10
       && Number(osRelease[2]) >= 10_586
