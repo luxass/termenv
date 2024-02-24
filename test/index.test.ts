@@ -171,7 +171,10 @@ describe("get supported color mode", () => {
       Object.defineProperty(process, "platform", {
         value: "win32",
       });
-      os.release = () => "10.0.10585";
+      Object.defineProperty(process.versions, "node", {
+        value: "8.0.0",
+      });
+      os.release = () => "10.0.10240";
 
       expect(getSupportedLevel()).toBe(1);
     });
@@ -179,6 +182,9 @@ describe("get supported color mode", () => {
     it("return level 2 if windows 10 build 10586 or later", () => {
       Object.defineProperty(process, "platform", {
         value: "win32",
+      });
+      Object.defineProperty(process.versions, "node", {
+        value: "8.0.0",
       });
       os.release = () => "10.0.10586";
 
@@ -188,6 +194,9 @@ describe("get supported color mode", () => {
     it("return level 3 if windows 10 build 14931 or later", () => {
       Object.defineProperty(process, "platform", {
         value: "win32",
+      });
+      Object.defineProperty(process.versions, "node", {
+        value: "8.0.0",
       });
       os.release = () => "10.0.14931";
 
