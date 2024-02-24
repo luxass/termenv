@@ -168,18 +168,27 @@ describe("get supported color mode", () => {
 
   describe.runIf(platform === "win32")("windows platform", () => {
     it("return level 1 if windows 10 build earlier than 10586", () => {
+      Object.defineProperty(process, "platform", {
+        value: "win32",
+      });
       os.release = () => "10.0.10585";
 
       expect(getSupportedLevel()).toBe(1);
     });
 
     it("return level 2 if windows 10 build 10586 or later", () => {
+      Object.defineProperty(process, "platform", {
+        value: "win32",
+      });
       os.release = () => "10.0.10586";
 
       expect(getSupportedLevel()).toBe(2);
     });
 
     it("return level 3 if windows 10 build 14931 or later", () => {
+      Object.defineProperty(process, "platform", {
+        value: "win32",
+      });
       os.release = () => "10.0.14931";
 
       expect(getSupportedLevel()).toBe(3);
