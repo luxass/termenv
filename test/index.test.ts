@@ -1,6 +1,7 @@
 import process, { platform } from "node:process";
 
 import tty from "node:tty";
+import os from "node:os";
 import { beforeEach, describe, expect, it } from "vitest";
 import { getSupportedLevel } from "../src";
 
@@ -167,37 +168,19 @@ describe("get supported color mode", () => {
 
   describe.runIf(platform === "win32")("windows platform", () => {
     it("return level 1 if windows 10 build earlier than 10586", () => {
-      Object.defineProperty(process, "platform", {
-        value: "win32",
-      });
-
-      Object.defineProperty(process, "release", {
-        value: "10.0.10420",
-      });
+      os.release = () => "10.0.10585";
 
       expect(getSupportedLevel()).toBe(1);
     });
 
     it("return level 2 if windows 10 build 10586 or later", () => {
-      Object.defineProperty(process, "platform", {
-        value: "win32",
-      });
-
-      Object.defineProperty(process, "release", {
-        value: "10.0.10586",
-      });
+      os.release = () => "10.0.10586";
 
       expect(getSupportedLevel()).toBe(2);
     });
 
     it("return level 3 if windows 10 build 14931 or later", () => {
-      Object.defineProperty(process, "platform", {
-        value: "win32",
-      });
-
-      Object.defineProperty(process, "release", {
-        value: "10.0.14931",
-      });
+      os.release = () => "10.0.14931";
 
       expect(getSupportedLevel()).toBe(3);
     });
