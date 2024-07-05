@@ -7,11 +7,7 @@ import os from "node:os";
  * @returns {0 | 1 | 2 | 3} The supported color mode
  */
 export function getSupportedLevel(): 0 | 1 | 2 | 3 {
-  const {
-    env,
-    argv,
-    platform,
-  } = process;
+  const { env, argv, platform } = process;
 
   if ("NO_COLOR" in env || argv.includes("--no-color")) {
     return 0;
@@ -38,7 +34,17 @@ export function getSupportedLevel(): 0 | 1 | 2 | 3 {
       return 3;
     }
 
-    if (["TRAVIS", "CIRCLECI", "APPVEYOR", "GITLAB_CI", "BUILDKITE", "DRONE"].some((ci) => env[ci]) || env.CI_NAME === "codeship") {
+    if (
+      [
+        "TRAVIS",
+        "CIRCLECI",
+        "APPVEYOR",
+        "GITLAB_CI",
+        "BUILDKITE",
+        "DRONE",
+      ].some((ci) => env[ci]) ||
+      env.CI_NAME === "codeship"
+    ) {
       return 1;
     }
 
@@ -47,10 +53,7 @@ export function getSupportedLevel(): 0 | 1 | 2 | 3 {
 
   if (platform === "win32") {
     const osRelease = os.release().split(".");
-    if (
-      Number(osRelease[0]) >= 10
-      && Number(osRelease[2]) >= 10_586
-    ) {
+    if (Number(osRelease[0]) >= 10 && Number(osRelease[2]) >= 10_586) {
       return Number(osRelease[2]) >= 14_931 ? 3 : 2;
     }
 
@@ -58,6 +61,7 @@ export function getSupportedLevel(): 0 | 1 | 2 | 3 {
   }
 
   if ("TEAMCITY_VERSION" in env) {
+    // eslint-disable-next-line regexp/no-unused-capturing-group
     return /^(9\.(0*[1-9]\d*)\.|\d{2,}\.)/.test(env.TEAMCITY_VERSION!) ? 1 : 0;
   }
 
@@ -65,11 +69,16 @@ export function getSupportedLevel(): 0 | 1 | 2 | 3 {
     return 3;
   }
 
+  // eslint-disable-next-line regexp/no-unused-capturing-group
   if (/-256(color)?$/i.test(env.TERM!)) {
     return 2;
   }
 
-  if (/^screen|^xterm|^vt100|^vt220|^rxvt|color|ansi|cygwin|linux/i.test(env.TERM!)) {
+  if (
+    /^screen|^xterm|^vt100|^vt220|^rxvt|color|ansi|cygwin|linux/i.test(
+      env.TERM!,
+    )
+  ) {
     return 1;
   }
 
