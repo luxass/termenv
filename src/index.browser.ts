@@ -23,12 +23,15 @@ export function getSupportedLevel(): 0 | 1 | 2 | 3 {
   }
 
   if (globalThis.navigator?.userAgentData) {
-    const brand = navigator.userAgentData?.brands.find(({ brand }) => brand === "Chromium");
+    const brand = navigator.userAgentData?.brands.find(
+      ({ brand }) => brand === "Chromium",
+    );
     if (brand && +brand?.version > 93) {
       return 3;
     }
   }
 
+  // eslint-disable-next-line regexp/no-unused-capturing-group
   if (/\b(Chrome|Chromium)\//.test(navigator.userAgent)) {
     return 1;
   }
