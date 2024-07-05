@@ -64,6 +64,7 @@
     "@luxass/eslint-config": "^4.8.0",
     "@types/node": "^18.19.4",
     "eslint": "^9.6.0",
+    "eslint-plugin-format": "^0.1.2",
     "jsdom": "^24.1.0",
     "tsup": "^8.1.0",
     "typescript": "^5.5.3",
