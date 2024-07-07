@@ -168,7 +168,6 @@ describe("get supported color mode", () => {
 
   describe.runIf(platform === "win32")("windows platform", () => {
     it("return level 1 if windows 10 build earlier than 10586", () => {
-      console.warn(process.env.CI, process.env.GITHUB_ACTIONS);
       Object.defineProperty(process, "platform", {
         value: "win32",
       });
@@ -181,8 +180,6 @@ describe("get supported color mode", () => {
     });
 
     it("return level 2 if windows 10 build 10586 or later", () => {
-      console.warn(process.env.CI, process.env.GITHUB_ACTIONS);
-
       Object.defineProperty(process, "platform", {
         value: "win32",
       });
@@ -195,8 +192,6 @@ describe("get supported color mode", () => {
     });
 
     it("return level 3 if windows 10 build 14931 or later", () => {
-      console.warn(process.env.CI, process.env.GITHUB_ACTIONS);
-
       Object.defineProperty(process, "platform", {
         value: "win32",
       });
