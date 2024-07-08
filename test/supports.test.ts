@@ -1,11 +1,8 @@
 import process, { platform } from "node:process";
-
 import tty from "node:tty";
 import os from "node:os";
 import { beforeEach, describe, expect, it } from "vitest";
 import { getSupportedLevel } from "../src";
-
-// const ORIGINAL_TTY = tty.isatty;
 
 beforeEach(() => {
   process.stdout.isTTY = true;
