@@ -2,16 +2,29 @@ import tty from "node:tty";
 import { afterAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { isUnicodeSupported } from "../src/unicode";
 
+vi.mock("tty");
+
+const originalPlatform = process.platform;
+const originalEnv = process.env;
+
 beforeEach(() => {
-  process.stdout.isTTY = true;
-  process.argv = [];
-  process.env = {};
-  tty.isatty = () => true;
+  vi.resetModules();
+  process.env = { ...originalEnv };
+});
+
+afterAll(() => {
+  vi.unstubAllGlobals();
+  vi.unstubAllEnvs();
+  // process.platform = originalPlatform;
+  Object.defineProperty(process, "platform", { value: originalPlatform });
+  process.env = originalEnv;
 });
 
 it("should return true for Windows with supported environment", () => {
-  vi.stubGlobal("process", { ...process, platform: "win32" });
-  process.env.WT_SESSION = "1";
+  Object.defineProperty(process, "platform", {
+    value: "win32",
+  });
+  vi.stubEnv("WT_SESSION", "1");
   expect(isUnicodeSupported()).toBe(true);
 });
 
