@@ -15,7 +15,7 @@ import {
   is256ColorSupported,
   isColorsSupported,
   isTrueColorSupported,
-} from "../src/index.browser";
+} from "../src/supports.browser";
 
 function setUserAgent(userAgent: string) {
   Object.defineProperty(navigator, "userAgent", {

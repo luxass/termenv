@@ -4,6 +4,8 @@ export default defineConfig([
   {
     entry: [
       "./src/index.ts",
+      "./src/supports.ts",
+      "./src/unicode.ts",
     ],
     format: ["cjs", "esm"],
     platform: "node",
@@ -11,7 +13,7 @@ export default defineConfig([
     dts: true,
     treeshake: true,
     bundle: true,
-    clean: true,
+    clean: false,
     outExtension(ctx) {
       return {
         js: ctx.format === "cjs" ? ".cjs" : ".mjs",
@@ -20,7 +22,7 @@ export default defineConfig([
   },
   {
     entry: {
-      index: "./src/index.browser.ts",
+      index: "./src/supports.browser.ts",
     },
     format: ["cjs", "esm"],
     platform: "browser",
