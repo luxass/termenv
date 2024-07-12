@@ -7,6 +7,7 @@ export default defineConfig([
       "./src/supports.ts",
       "./src/unicode.ts",
       "./src/utils.ts",
+      "./src/window-size.ts",
     ],
     format: ["cjs", "esm"],
     platform: "node",
