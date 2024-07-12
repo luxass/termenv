@@ -6,6 +6,7 @@ export default defineConfig([
       "./src/index.ts",
       "./src/supports.ts",
       "./src/unicode.ts",
+      "./src/utils.ts",
     ],
     format: ["cjs", "esm"],
     platform: "node",
