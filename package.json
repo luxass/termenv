@@ -80,6 +80,16 @@
         "default": "./dist/utils.cjs"
       }
     },
+    "./window-size": {
+      "import": {
+        "types": "./dist/window-size.d.ts",
+        "default": "./dist/window-size.mjs"
+      },
+      "require": {
+        "types": "./dist/window-size.d.cts",
+        "default": "./dist/window-size.cjs"
+      }
+    },
     "./package.json": "./package.json"
   },
   "main": "dist/index.cjs",
