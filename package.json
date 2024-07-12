@@ -34,15 +34,15 @@
     ".": {
       "import": {
         "types": "./dist/index.d.ts",
-        "browser": "./dist/browser/index.mjs",
+        "browser": "./dist/browser/index.browser.mjs",
         "default": "./dist/index.mjs"
       },
       "require": {
         "types": "./dist/index.d.cts",
-        "browser": "./dist/browser/index.cjs",
+        "browser": "./dist/browser/index.browser.cjs",
         "default": "./dist/index.cjs"
       },
-      "browser": "./dist/browser/index.mjs"
+      "browser": "./dist/browser/index.browser.mjs"
     },
     "./browser": {
       "import": {

@@ -21,9 +21,10 @@ export default defineConfig([
     },
   },
   {
-    entry: {
-      index: "./src/supports.browser.ts",
-    },
+    entry: [
+      "./src/index.browser.ts",
+      "./src/supports.browser.ts",
+    ],
     format: ["cjs", "esm"],
     platform: "browser",
     outDir: "dist/browser",
