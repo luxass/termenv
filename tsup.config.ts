@@ -24,6 +24,7 @@ export default defineConfig([
     entry: [
       "./src/index.browser.ts",
       "./src/supports.browser.ts",
+      "./src/unicode.browser.ts",
     ],
     format: ["cjs", "esm"],
     platform: "browser",

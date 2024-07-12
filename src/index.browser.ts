@@ -5,3 +5,5 @@ export {
   is16ColorSupported,
   getSupportedLevel,
 } from "./supports.browser";
+
+export { isUnicodeSupported } from "./unicode.browser";
