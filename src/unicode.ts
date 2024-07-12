@@ -6,11 +6,7 @@ import tty from "node:tty";
  * @returns {boolean} A boolean value indicating whether Unicode is supported.
  */
 export function isUnicodeSupported(): boolean {
-  // eslint-disable-next-line no-console
-  console.log(process.platform);
   if (process.platform === "win32") {
-    // eslint-disable-next-line no-console
-    console.log(process.env.WT_SESSION);
     return Boolean(process.env.CI)
       || Boolean(process.env.WT_SESSION)
       || process.env.TERM_PROGRAM === "vscode"
