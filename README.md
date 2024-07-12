@@ -35,7 +35,10 @@ console.log(isTrueColorSupported()); // => true | false
 console.log(isUnicodeSupported()); // => true | false
 ```
 
-This package also provides a `browser` export, which tries to detect the color support of the browser environment.
+> [!NOTE]
+> This package also provides a `browser` export, which tries to detect the color support of the browser environment.
+
+### Utilities
 
 ```ts
 import {
@@ -59,6 +62,14 @@ process.stdout.write(ERASE_LINE_RIGHT); // erase the line to the right of the cu
 process.stdout.write(ERASE_SCREEN); // erase the screen
 process.stdout.write(ERASE_SCREEN_LEFT); // erase the screen to the left of the cursor
 process.stdout.write(ERASE_SCREEN_RIGHT); // erase the screen to the right of the cursor
+```
+
+### Window Size
+
+```ts
+import { getWindowSize } from "termenv/window-size";
+
+console.log(getWindowSize()); // => { width: 40, height: 40 }
 ```
 
 ## 📄 License
