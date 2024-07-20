@@ -34,41 +34,22 @@
     ".": {
       "import": {
         "types": "./dist/index.d.ts",
-        "browser": "./dist/browser/index.browser.mjs",
         "default": "./dist/index.mjs"
       },
       "require": {
         "types": "./dist/index.d.cts",
-        "browser": "./dist/browser/index.browser.cjs",
         "default": "./dist/index.cjs"
-      },
-      "browser": "./dist/browser/index.browser.mjs"
-    },
-    "./browser": {
-      "import": {
-        "types": "./dist/browser/index.browser.d.ts",
-        "browser": "./dist/browser/index.browser.mjs",
-        "default": "./dist/browser/index.browser.mjs"
-      },
-      "require": {
-        "types": "./dist/browser/index.browser.d.cts",
-        "browser": "./dist/browser/index.browser.cjs",
-        "default": "./dist/browser/index.browser.cjs"
-      },
-      "browser": "./dist/browser/index.browser.mjs"
+      }
     },
     "./unicode": {
       "import": {
         "types": "./dist/unicode.d.ts",
-        "browser": "./dist/browser/unicode.browser.mjs",
         "default": "./dist/unicode.mjs"
       },
       "require": {
         "types": "./dist/unicode.d.cts",
-        "browser": "./dist/browser/unicode.browser.cjs",
         "default": "./dist/unicode.cjs"
-      },
-      "browser": "./dist/browser/unicode.browser.mjs"
+      }
     },
     "./utils": {
       "import": {
