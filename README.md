@@ -35,9 +35,6 @@ console.log(isTrueColorSupported()); // => true | false
 console.log(isUnicodeSupported()); // => true | false
 ```
 
-> [!NOTE]
-> This package also provides a `browser` export, which tries to detect the color support of the browser environment.
-
 ### Utilities
 
 ```ts
