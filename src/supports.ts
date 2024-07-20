@@ -1,3 +1,20 @@
+/**
+ * @module supports
+ *
+ * Check if the current environment supports colors.
+ *
+ * @example
+ * ```ts
+ * import { isColorsSupported, getSupportedLevel } from "termenv";
+ *
+ * isColorsSupported();
+ * // => true
+ *
+ * getSupportedLevel();
+ * // => 3
+ * ```
+ */
+
 import tty from "node:tty";
 import process from "node:process";
 import os from "node:os";

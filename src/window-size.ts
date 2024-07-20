@@ -1,3 +1,18 @@
+/**
+ * @module window-size
+ *
+ * Detect the size of the terminal window.
+ *
+ * @example
+ * ```ts
+ * import { getWindowSize } from "termenv/window-size";
+ *
+ * const size = getWindowSize();
+ * console.log(size);
+ * // => { width: 80, height: 24 }
+ * ```
+ */
+
 import process from "node:process";
 
 export interface WindowSize {

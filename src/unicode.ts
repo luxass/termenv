@@ -1,3 +1,17 @@
+/**
+ * @module unicode
+ *
+ * Check if the current environment supports Unicode.
+ *
+ * @example
+ * ```ts
+ * import { isUnicodeSupported } from "termenv/unicode";
+ *
+ * isUnicodeSupported();
+ * // => true
+ * ```
+ */
+
 import process from "node:process";
 import tty from "node:tty";
 

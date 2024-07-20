@@ -1,3 +1,39 @@
+/**
+ * @module utils
+ *
+ * Utility functions for working with terminal escape codes.
+ *
+ * @example
+ * ```ts
+ * import { strip } from "termenv/utils";
+ *
+ * const text = "\u001b[31mHello, World!\u001b[0m";
+ * console.log(strip(text));
+ * // => "Hello, World!"
+ * ```
+ *
+ * @example
+ * ```ts
+ * import {
+ *   RESET,
+ *   ERASE_SCREEN,
+ *   ERASE_SCREEN_LEFT,
+ *   ERASE_SCREEN_RIGHT,
+ *   ERASE_LINE,
+ *   ERASE_LINE_LEFT,
+ *   ERASE_LINE_RIGHT
+ * } from "termenv/utils";
+ *
+ * process.stdout.write(RESET);
+ * process.stdout.write(ERASE_SCREEN);
+ * process.stdout.write(ERASE_SCREEN_LEFT);
+ * process.stdout.write(ERASE_SCREEN_RIGHT);
+ * process.stdout.write(ERASE_LINE);
+ * process.stdout.write(ERASE_LINE_LEFT);
+ * process.stdout.write(ERASE_LINE_RIGHT);
+ * ```
+ */
+
 export const RESET = "\x1B[2J\x1B[0;0H";
 
 export const ERASE_SCREEN = "\x1B[2J";

@@ -1,3 +1,9 @@
+/**
+ * @module
+ *
+ * Termenv is a utility library for working with terminal environments.
+ */
+
 export {
   isColorsSupported,
   isTrueColorSupported,
