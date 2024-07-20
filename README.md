@@ -2,6 +2,7 @@
 
 [![npm version][npm-version-src]][npm-version-href]
 [![npm downloads][npm-downloads-src]][npm-downloads-href]
+[![jsr version][jsr-version-src]][jsr-version-href]
 
 ## 📦 Installation
 
@@ -79,3 +80,5 @@ Published under [MIT License](./LICENSE).
 [npm-version-href]: https://npmjs.com/package/termenv
 [npm-downloads-src]: https://img.shields.io/npm/dm/termenv?style=flat&colorA=18181B&colorB=4169E1
 [npm-downloads-href]: https://npmjs.com/package/termenv
+[jsr-version-src]: https://jsr.io/badges/@luxass/termenv?style=flat&labelColor=18181B&logoColor=4169E1
+[jsr-version-href]: https://jsr.io/@luxass/termenv
