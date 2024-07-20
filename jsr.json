@@ -1,0 +1,19 @@
+{
+  "name": "@luxass/termenv",
+  "version": "0.2.0",
+  "exports": {
+    ".": "./src/index.ts",
+    "./utils": "./src/utils.ts",
+    "./unicode": "./src/unicode.ts",
+    "./browser": "./src/index.browser.ts",
+    "./window-size": "./src/window-size.ts"
+  },
+  "exclude": [
+    "tsup.config.ts",
+    "eslint.config.js",
+    "pnpm-lock.yaml",
+    ".github/**",
+    "scripts/**",
+    "test/**"
+  ]
+}
