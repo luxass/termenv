@@ -41,6 +41,16 @@
         "default": "./dist/index.cjs"
       }
     },
+    "./supports": {
+      "import": {
+        "types": "./dist/supports.d.ts",
+        "default": "./dist/supports.mjs"
+      },
+      "require": {
+        "types": "./dist/supports.d.cts",
+        "default": "./dist/supports.cjs"
+      }
+    },
     "./unicode": {
       "import": {
         "types": "./dist/unicode.d.ts",
