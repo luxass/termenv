@@ -15,6 +15,9 @@
 
 import process from "node:process";
 
+/**
+ * Represents the size of a terminal window.
+ */
 export interface WindowSize {
   width: number;
   height: number;
