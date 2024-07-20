@@ -34,16 +34,44 @@
  * ```
  */
 
+/**
+ * The ANSI escape code for resetting all attributes.
+ */
 export const RESET = "\x1B[2J\x1B[0;0H";
 
+/**
+ * The ANSI escape code for erasing the screen.
+ */
 export const ERASE_SCREEN = "\x1B[2J";
+
+/**
+ * The ANSI escape code for erasing the screen to the left of the cursor.
+ */
 export const ERASE_SCREEN_LEFT = "\x1B[1J";
+
+/**
+ * The ANSI escape code for erasing the screen to the right of the cursor.
+ */
 export const ERASE_SCREEN_RIGHT = "\x1B[J";
 
+/**
+ * The ANSI escape code for erasing the current line.
+ */
 export const ERASE_LINE = "\x1B[2K";
+
+/**
+ * The ANSI escape code for erasing the line to the left of the cursor.
+ */
 export const ERASE_LINE_LEFT = "\x1B[1K";
+
+/**
+ * The ANSI escape code for erasing the line to the right of the cursor.
+ */
 export const ERASE_LINE_RIGHT = "\x1B[K";
 
+/**
+ * Regex for matching ANSI escape codes.
+ */
 // eslint-disable-next-line no-control-regex
 export const ANSI_REGEX = /[\u001B\u009B][[\]()#;?]*(?:(?:(?:;[-\w/#&.:=?%@~]+)+|[a-zA-Z\d]+(?:;[-\w/#&.:=?%@~]*)*)?\u0007|(?:\d{1,4}(?:;\d{0,4})*)?[\dA-PR-TZcf-ntqry=><~])/g;
 
