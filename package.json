@@ -8,7 +8,7 @@
     "email": "lucasnrgaard@gmail.com",
     "url": "https://luxass.dev"
   },
-  "packageManager": "pnpm@9.5.0",
+  "packageManager": "pnpm@9.6.0",
   "license": "MIT",
   "homepage": "https://github.com/luxass/termenv",
   "repository": {
@@ -100,10 +100,10 @@
   "devDependencies": {
     "@luxass/eslint-config": "^4.9.0",
     "@types/node": "^18.19.39",
-    "eslint": "^9.6.0",
+    "eslint": "^9.8.0",
     "eslint-plugin-format": "^0.1.2",
-    "tsup": "^8.1.0",
-    "typescript": "^5.5.3",
-    "vitest": "^2.0.2"
+    "tsup": "^8.2.3",
+    "typescript": "^5.5.4",
+    "vitest": "^2.0.4"
   }
 }
