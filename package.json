@@ -1,6 +1,6 @@
 {
   "name": "termenv",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "Terminal Environment Utilities",
   "type": "module",
   "author": {
