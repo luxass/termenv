@@ -76,7 +76,7 @@ export function getColorSpace<TGlobal = typeof globalThis>(mockGlobal?: TGlobal)
 
   if (isForceDisabled) return SPACE_MONO;
 
-  if (colorSpace == null) {
+  if (colorSpace < 0) {
     colorSpace = getColorSpaceByRuntime(
       runtime.env,
       runtime.isTTY,
@@ -95,7 +95,7 @@ const TRUE_COLOR_CI = [
 ];
 
 export function getColorSpaceByRuntime(env: Record<string, string | undefined>, isTTY: boolean, isWin: boolean): ColorSpace {
-  const { TERM: term } = env;
+  const { TERM, COLORTERM } = env;
 
   // Azure DevOps CI
   // https://learn.microsoft.com/en-us/azure/devops/pipelines/build/variables?view=azure-devops&tabs=yaml
@@ -115,10 +115,23 @@ export function getColorSpaceByRuntime(env: Record<string, string | undefined>, 
   }
 
   // unknown output or colors are not supported
-  if (!isTTY || /-mono|dumb/i.test(term!)) return SPACE_MONO;
+  if (!isTTY || /-mono|dumb/i.test(TERM!)) return SPACE_MONO;
 
   // truecolor support starts from Windows 10 build 14931 (2016-09-21), in 2024 we assume modern Windows is used
   if (isWin) return SPACE_TRUE_COLORS;
+
+  // terminals, that support truecolor, e.g., iTerm, VSCode
+  if (COLORTERM === "truecolor" || COLORTERM === "24bit") return SPACE_TRUE_COLORS;
+
+  // kitty is GPU based terminal emulator
+  if (TERM === "xterm-kitty") return SPACE_TRUE_COLORS;
+
+  // check for 256 colors after ENV variables such as TERM, COLORTERM, TERMINAL_EMULATOR etc.
+  // terminals, that support 256 colors, e.g., native macOS terminal
+  if (/-256(?:colou?r)?$/i.test(TERM!)) return SPACE_256_COLORS;
+
+  // known terminals supporting 16 colors
+  if (/^screen|^tmux|^xterm|^vt[1-5]\d\d?|^ansi|color|cygwin|linux|mintty|rxvt/i.test(TERM!)) return SPACE_16_COLORS;
 
   // if we can't detect the terminal, we assume it supports true colors
   // because most modern terminals support true colors
