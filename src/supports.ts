@@ -41,7 +41,7 @@ function hasFlag(argv: string[], regex: RegExp): boolean {
   return !!argv.find((arg) => regex.test(arg));
 }
 
-export function getColorSpace(mockGlobal?: typeof globalThis): ColorSpace {
+export function getColorSpace<TGlobal = typeof globalThis>(mockGlobal?: TGlobal): ColorSpace {
   let colorSpace = -1;
   const runtime = getRuntimeConfig(mockGlobal);
 
