@@ -9,7 +9,12 @@ export {
   isTrueColorSupported,
   is256ColorSupported,
   is16ColorSupported,
-  getSupportedLevel,
+  getColorSpace,
+  SPACE_16_COLORS,
+  type ColorSpace,
+  SPACE_256_COLORS,
+  SPACE_MONO,
+  SPACE_TRUE_COLORS,
 } from "./supports";
 
 export { getRuntimeConfig, type EnvRuntimeConfig } from "./env";
