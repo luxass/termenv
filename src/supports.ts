@@ -50,11 +50,43 @@ export function getColorSpace(mockGlobal?: typeof globalThis): ColorSpace {
     colorSpace = SPACE_MONO;
   }
 
-  if (colorSpace < 0) {
-    colorSpace = SPACE_256_COLORS;
+  // When FORCE_COLOR is present and not an empty string (regardless of its value, except `false` or `0`),
+  // it should force the addition of ANSI color.
+  // See https://force-color.org
+  const FORCE_COLOR = "FORCE_COLOR";
+  const forceColorValue = runtime.env[FORCE_COLOR];
+  const forceColorNum = Number.parseInt(forceColorValue!);
+  const forceColor
+    = forceColorValue === "false"
+      ? SPACE_MONO
+      : Number.isNaN(forceColorNum)
+        ? SPACE_TRUE_COLORS
+        : forceColorNum;
+
+  const isForceDisabled
+    = "NO_COLOR" in runtime.env
+    || forceColor === SPACE_MONO
+    // --no-color --color=false --color=never
+    || hasFlag(runtime.argv, /^-{1,2}(?:no-color|color=(?:false|never))$/);
+
+  // --color --color=true --color=always
+  const isForceEnabled
+    = (FORCE_COLOR in runtime.env && forceColor)
+    || hasFlag(runtime.argv, /^-{1,2}color=?(?:true|always)?$/);
+
+  if (isForceDisabled) return SPACE_MONO;
+
+  if (colorSpace == null) {
+    colorSpace = getColorSpaceByRuntime(
+      runtime.env,
+      runtime.isTTY,
+      runtime.platform === "win32",
+    );
   }
 
-  return colorSpace as ColorSpace;
+  return isForceEnabled && colorSpace === SPACE_MONO
+    ? SPACE_TRUE_COLORS
+    : colorSpace as ColorSpace;
 }
 
 const TRUE_COLOR_CI = [
