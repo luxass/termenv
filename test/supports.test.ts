@@ -1,220 +1,130 @@
-import process, { platform } from "node:process";
-import tty from "node:tty";
-import os from "node:os";
-import { beforeEach, describe, expect, it } from "vitest";
-import { getSupportedLevel } from "../src";
+import { describe, expect, it } from "vitest";
+import {
+  SPACE_16_COLORS,
+  SPACE_256_COLORS,
+  SPACE_MONO,
+  SPACE_TRUE_COLORS,
+  getColorSpace,
+} from "../src/supports";
 
-beforeEach(() => {
-  process.stdout.isTTY = true;
-  process.argv = [];
-  process.env = {};
-  tty.isatty = () => true;
+describe("detect CI color spaces", () => {
+  it.each([
+    ["AppVeyor", { CI: "1", APPVEYOR: "1" }, SPACE_16_COLORS],
+    ["Azure DevOps", { TF_BUILD: "1" }, SPACE_16_COLORS],
+    ["CircleCI", { CI: "1", CIRCLECI: "1" }, SPACE_16_COLORS],
+    ["Drone", { CI: "1", DRONE: "1" }, SPACE_16_COLORS],
+    ["Gitea Actions", { CI: "1", GITEA_ACTIONS: "1" }, SPACE_TRUE_COLORS],
+    ["GitHub Actions", { CI: "1", GITHUB_ACTIONS: "1" }, SPACE_TRUE_COLORS],
+    ["GitLab CI", { CI: "1", GITLAB_CI: "1" }, SPACE_16_COLORS],
+    ["Netlify CI", { CI: "1", NETLIFY: "1" }, SPACE_16_COLORS],
+    ["TeamCity", { TEAMCITY_VERSION: "1" }, SPACE_256_COLORS],
+    ["Travis CI", { CI: "1", TRAVIS: "1" }, SPACE_16_COLORS],
+    ["Vercel", { CI: "1", VERCEL: "1" }, SPACE_16_COLORS],
+    ["Woodpecker", { CI: "1", WOODPECKER: "1" }, SPACE_16_COLORS],
+    ["Generic CI", { CI: "1" }, SPACE_16_COLORS],
+  ])("should return correct colors for %s", (_name, env, expected) => {
+    const colorSpace = getColorSpace({
+      process: {
+        env,
+        platform: process.platform,
+      },
+    });
+
+    expect(colorSpace).toBe(expected);
+  });
 });
 
-describe("get supported color mode", () => {
-  it("should return `0` if NO_COLOR is in env", () => {
-    process.env = {
-      NO_COLOR: "1",
-    };
+describe("flags & options", () => {
+  it.each([
+    // force enable colors using flags
+    [["--color"], {}, SPACE_TRUE_COLORS],
+    [["-color"], {}, SPACE_TRUE_COLORS],
+    [["--color=true"], {}, SPACE_TRUE_COLORS],
+    [["-color=true"], {}, SPACE_TRUE_COLORS],
+    [["--color=always"], {}, SPACE_TRUE_COLORS],
+    [["-color=always"], {}, SPACE_TRUE_COLORS],
 
-    expect(getSupportedLevel()).toBe(0);
-  });
+    // force enable colors using env
+    [[], { FORCE_COLOR: "1" }, SPACE_TRUE_COLORS],
+    [[], { FORCE_COLOR: "true" }, SPACE_TRUE_COLORS],
+    [[], { FORCE_COLOR: "always" }, SPACE_TRUE_COLORS],
 
-  it("should return `0` if --no-color is in argv", () => {
-    process.argv.push("--no-color");
-    expect(getSupportedLevel()).toBe(0);
-  });
+    // force disable colors using flags
+    [["--no-color"], {}, SPACE_MONO],
+    [["-no-color"], {}, SPACE_MONO],
+    [["--color=false"], {}, SPACE_MONO],
+    [["-color=false"], {}, SPACE_MONO],
+    [["--color=never"], {}, SPACE_MONO],
+    [["-color=never"], {}, SPACE_MONO],
 
-  it("should return `3` if FORCE_COLOR is in env", () => {
-    process.env = {
-      FORCE_COLOR: "1",
-    };
+    // force disable colors using env
+    [[], { NO_COLOR: "1" }, SPACE_MONO],
+    [[], { FORCE_COLOR: "false" }, SPACE_MONO],
+    [[], { FORCE_COLOR: "0" }, SPACE_MONO],
 
-    expect(getSupportedLevel()).toBe(3);
-  });
-
-  it("should return `3` if --color is in argv", () => {
-    process.argv.push("--color");
-    expect(getSupportedLevel()).toBe(3);
-  });
-
-  it("return false if `CI` is in env", async () => {
-    process.env = {
-      CI: "1",
-    };
-
-    expect(getSupportedLevel()).toBe(0);
-  });
-
-  it("return true if `TRAVIS` is in env", async () => {
-    process.env = {
-      CI: "true",
-      TRAVIS: "true",
-    };
-
-    expect(getSupportedLevel()).toBe(1);
-  });
-
-  it("return true if `CIRCLECI` is in env", async () => {
-    process.env = {
-      CI: "true",
-      CIRCLECI: "true",
-    };
-
-    expect(getSupportedLevel()).toBe(1);
-  });
-
-  it("return true if `APPVEYOR` is in env", async () => {
-    process.env = {
-      CI: "true",
-      APPVEYOR: "true",
-    };
-
-    expect(getSupportedLevel()).toBe(1);
-  });
-
-  it("return true if `GITLAB_CI` is in env", async () => {
-    process.env = {
-      CI: "true",
-      GITLAB_CI: "true",
-    };
-
-    expect(getSupportedLevel()).toBe(1);
-  });
-
-  it("return true if `BUILDKITE` is in env", async () => {
-    process.env = {
-      CI: "true",
-      BUILDKITE: "true",
-    };
-
-    expect(getSupportedLevel()).toBe(1);
-  });
-
-  it("return true if `DRONE` is in env", async () => {
-    process.env = {
-      CI: "true",
-      DRONE: "true",
-    };
-
-    expect(getSupportedLevel()).toBe(1);
-  });
-
-  it("return level 3 if `GITEA_ACTIONS` is in env", async () => {
-    process.env = {
-      CI: "true",
-      GITEA_ACTIONS: "true",
-    };
-
-    expect(getSupportedLevel()).toBe(3);
-  });
-
-  it("return true if Codeship is in env", async () => {
-    process.env = {
-      CI: "true",
-      CI_NAME: "codeship",
-    };
-
-    expect(getSupportedLevel()).toBe(1);
-  });
-
-  it("return false if `TEAMCITY_VERSION` is in env and is < 9.1", async () => {
-    process.env = {
-      TEAMCITY_VERSION: "9.0.5 (build 32523)",
-    };
-
-    if (platform === "win32") {
-      // set platform to linux
-      Object.defineProperty(process, "platform", {
-        value: "linux",
-      });
-    }
-
-    expect(getSupportedLevel()).toBe(0);
-  });
-
-  it("return true if `TEAMCITY_VERSION` is in env and is a newer release", async () => {
-    process.env = {
-      TEAMCITY_VERSION: "2023.11.3 (build 147512)",
-    };
-
-    if (platform === "win32") {
-      // set platform to linux
-      Object.defineProperty(process, "platform", {
-        value: "linux",
-      });
-    }
-
-    expect(getSupportedLevel()).toBe(1);
-  });
-
-  it("return level 1 if `TEAMCITY_VERSION` is in env and is >= 9.1", async () => {
-    process.env = {
-      TEAMCITY_VERSION: "9.1.0 (build 32523)",
-    };
-
-    if (platform === "win32") {
-      // set platform to linux
-      Object.defineProperty(process, "platform", {
-        value: "linux",
-      });
-    }
-
-    expect(getSupportedLevel()).toBe(1);
-  });
-
-  describe.runIf(platform === "win32")("windows platform", () => {
-    it("return level 1 if windows 10 build earlier than 10586", () => {
-      Object.defineProperty(process, "platform", {
-        value: "win32",
-      });
-      Object.defineProperty(process.versions, "node", {
-        value: "8.0.0",
-      });
-      os.release = () => "10.0.10240";
-
-      expect(getSupportedLevel()).toBe(1);
+    // using both flags and env
+    [["--color"], { FORCE_COLOR: "false" }, SPACE_MONO],
+    [["--no-color"], { FORCE_COLOR: "true" }, SPACE_MONO],
+    [["--color"], { NO_COLOR: "1" }, SPACE_MONO],
+    [["--no-color"], { NO_COLOR: "0" }, SPACE_MONO],
+  ])("using argv=(%s), env=(%s)", (argv, env, expected) => {
+    const colorSpace = getColorSpace({
+      process: {
+        argv,
+        env,
+        platform: process.platform,
+      },
     });
 
-    it("return level 2 if windows 10 build 10586 or later", () => {
-      Object.defineProperty(process, "platform", {
-        value: "win32",
-      });
-      Object.defineProperty(process.versions, "node", {
-        value: "8.0.0",
-      });
-      os.release = () => "10.0.10586";
+    expect(colorSpace).toBe(expected);
+  });
+});
 
-      expect(getSupportedLevel()).toBe(2);
-    });
-
-    it("return level 3 if windows 10 build 14931 or later", () => {
-      Object.defineProperty(process, "platform", {
-        value: "win32",
-      });
-      Object.defineProperty(process.versions, "node", {
-        value: "8.0.0",
-      });
-      os.release = () => "10.0.14931";
-
-      expect(getSupportedLevel()).toBe(3);
-    });
+it("use True Color for non-detectable terminals", () => {
+  const colorSpace = getColorSpace({
+    process: {
+      platform: process.platform,
+      env: {
+        TERM: "thisisnotarealterminal",
+      },
+      argv: [],
+      stdout: { isTTY: true },
+      stderr: { isTTY: true },
+    },
   });
 
-  it("return false when `TERM` is set to dumb", () => {
-    process.env = {
-      TERM: "dumb",
-    };
+  expect(colorSpace).toEqual(SPACE_TRUE_COLORS);
+});
 
-    expect(getSupportedLevel()).toBe(0);
-  });
-
-  it("return level 3 if `TERM` is set to dumb when `FORCE_COLOR` is set", () => {
-    process.env = {
-      TERM: "dumb",
-      FORCE_COLOR: "1",
-    };
-
-    expect(getSupportedLevel()).toBe(3);
+describe("detect color space in terminals", () => {
+  it.each([
+    ["xterm", SPACE_16_COLORS],
+    ["xterm-16colour", SPACE_16_COLORS],
+    ["xterm-256", SPACE_256_COLORS],
+    ["xterm-256color", SPACE_256_COLORS],
+    ["xterm-256colour", SPACE_256_COLORS],
+    ["xterm-kitty", SPACE_TRUE_COLORS],
+    ["tmux", SPACE_16_COLORS],
+    ["tmux-256color", SPACE_256_COLORS],
+    ["vt220", SPACE_16_COLORS],
+    ["vt320-w", SPACE_16_COLORS],
+    ["vt52", SPACE_16_COLORS],
+    ["vt525", SPACE_16_COLORS],
+  ])("should return term %s with space %s", (term, expected) => {
+    // windows supports true colors in 2024, so all of these `TERM` values
+    // are returned as space 3 (true colors) when on windows.
+    const platform = process.platform === "win32" ? "linux" : process.platform;
+    const received = getColorSpace({
+      process: {
+        platform,
+        env: {
+          TERM: term,
+        },
+        argv: [],
+        stdout: { isTTY: true },
+        stderr: { isTTY: true },
+      },
+    });
+    expect(received).toEqual(expected);
   });
 });

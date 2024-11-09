@@ -1,142 +1,179 @@
 /**
  * @module supports
  *
- * Check if the current environment supports colors.
+ * Check if the current environment supports colors and which level of color support it has.
  *
  * @example
  * ```ts
- * import { isColorsSupported, getSupportedLevel } from "termenv";
+ * import { getColorSpace } from "termenv";
  *
- * isColorsSupported();
- * // => true
+ * getColorSpace();
+ * // => 0 (no color support)
  *
- * getSupportedLevel();
- * // => 3
+ * getColorSpace();
+ * // => 1 (16 colors)
+ *
+ * getColorSpace();
+ * // => 2 (256 colors)
+ *
+ * getColorSpace();
+ * // => 3 (true colors)
  * ```
  */
 
-import tty from "node:tty";
-import process from "node:process";
-import os from "node:os";
+import { getRuntimeConfig } from "./env";
+
+export type ColorSpace = 0 | 1 | 2 | 3;
+
+export const SPACE_MONO = 0;
+export const SPACE_16_COLORS = 1;
+export const SPACE_256_COLORS = 2;
+export const SPACE_TRUE_COLORS = 3;
 
 /**
- * Get the supported color mode based on the environment
- * @returns {0 | 1 | 2 | 3} The supported color mode
+ * Detect whether flags exist in command-line arguments.
+ *
+ * @param {string[]} argv The command-line arguments.
+ * @param {RegExp} regex The RegEx to match all possible flags.
+ * @return {boolean}
  */
-export function getSupportedLevel(): 0 | 1 | 2 | 3 {
-  const { env, argv, platform } = process;
+function hasFlag(argv: string[], regex: RegExp): boolean {
+  return !!argv.find((arg) => regex.test(arg));
+}
 
-  if ("NO_COLOR" in env || argv.includes("--no-color")) {
-    return 0;
+export function getColorSpace<TGlobal = typeof globalThis>(mockGlobal?: TGlobal): ColorSpace {
+  let colorSpace = -1;
+  const runtime = getRuntimeConfig(mockGlobal);
+
+  // runtime is deno, and no env is set due to missing `--allow-env` flag
+  if (runtime.runtime === "deno" && Object.keys(runtime.env).length === 0) {
+    colorSpace = SPACE_MONO;
   }
 
-  if ("FORCE_COLOR" in env || argv.includes("--color")) {
-    return 3;
+  // When FORCE_COLOR is present and not an empty string (regardless of its value, except `false` or `0`),
+  // it should force the addition of ANSI color.
+  // See https://force-color.org
+  const FORCE_COLOR = "FORCE_COLOR";
+  const forceColorValue = runtime.env[FORCE_COLOR];
+  const forceColorNum = Number.parseInt(forceColorValue!);
+  const forceColor
+    = forceColorValue === "false"
+      ? SPACE_MONO
+      : Number.isNaN(forceColorNum)
+        ? SPACE_TRUE_COLORS
+        : forceColorNum;
+
+  const isForceDisabled
+    = "NO_COLOR" in runtime.env
+    || forceColor === SPACE_MONO
+    // --no-color --color=false --color=never
+    || hasFlag(runtime.argv, /^-{1,2}(?:no-color|color=(?:false|never))$/);
+
+  // --color --color=true --color=always
+  const isForceEnabled
+    = (FORCE_COLOR in runtime.env && forceColor)
+    || hasFlag(runtime.argv, /^-{1,2}color=?(?:true|always)?$/);
+
+  if (isForceDisabled) return SPACE_MONO;
+
+  if (colorSpace < 0) {
+    colorSpace = getColorSpaceByRuntime(
+      runtime.env,
+      runtime.isTTY,
+      runtime.platform === "win32",
+    );
   }
 
-  if ("TF_BUILD" in env && "AGENT_NAME" in env) {
-    return 1;
-  }
+  return isForceEnabled && colorSpace === SPACE_MONO
+    ? SPACE_TRUE_COLORS
+    : colorSpace as ColorSpace;
+}
 
-  if (!tty.isatty(1) && !tty.isatty(2)) {
-    return 0;
-  }
+const TRUE_COLOR_CI = [
+  "GITHUB_ACTIONS",
+  "GITEA_ACTIONS",
+];
 
-  if (env.TERM === "dumb") {
-    return 0;
-  }
+export function getColorSpaceByRuntime(env: Record<string, string | undefined>, isTTY: boolean, isWin: boolean): ColorSpace {
+  const { TERM, COLORTERM } = env;
 
+  // Azure DevOps CI
+  // https://learn.microsoft.com/en-us/azure/devops/pipelines/build/variables?view=azure-devops&tabs=yaml
+  if ("TF_BUILD" in env) return SPACE_16_COLORS;
+
+  // https://youtrack.jetbrains.com/issue/TW-62063/Expand-ANSI-coloring-support-to-include-256-color-set
+  // JetBrains TeamCity support 256 colors since 2020.1.1 (2020-06-23)
+  if ("TEAMCITY_VERSION" in env) return SPACE_256_COLORS;
+
+  // CI tools
+  // https://github.com/watson/ci-info/blob/master/vendors.json
   if ("CI" in env) {
-    if ("GITHUB_ACTIONS" in env || "GITEA_ACTIONS" in env) {
-      return 3;
-    }
+    if (TRUE_COLOR_CI.some((key) => key in env)) return SPACE_TRUE_COLORS;
 
-    if (
-      [
-        "TRAVIS",
-        "CIRCLECI",
-        "APPVEYOR",
-        "GITLAB_CI",
-        "BUILDKITE",
-        "DRONE",
-      ].some((ci) => env[ci]) || env.CI_NAME === "codeship"
-    ) {
-      return 1;
-    }
-
-    return 0;
+    // others CI supports only 16 colors
+    return SPACE_16_COLORS;
   }
 
-  if (platform === "win32") {
-    const osRelease = os.release().split(".");
-    if (Number(osRelease[0]) >= 10 && Number(osRelease[2]) >= 10_586) {
-      return Number(osRelease[2]) >= 14_931 ? 3 : 2;
-    }
+  // unknown output or colors are not supported
+  if (!isTTY || /-mono|dumb/i.test(TERM!)) return SPACE_MONO;
 
-    return 1;
-  }
+  // truecolor support starts from Windows 10 build 14931 (2016-09-21), in 2024 we assume modern Windows is used
+  if (isWin) return SPACE_TRUE_COLORS;
 
-  if ("TEAMCITY_VERSION" in env) {
-    // eslint-disable-next-line regexp/no-unused-capturing-group
-    return /^(9\.(0*[1-9]\d*)\.|\d{2,}\.)/.test(env.TEAMCITY_VERSION!) ? 1 : 0;
-  }
+  // terminals, that support truecolor, e.g., iTerm, VSCode
+  if (COLORTERM === "truecolor" || COLORTERM === "24bit") return SPACE_TRUE_COLORS;
 
-  if (env.COLORTERM === "truecolor") {
-    return 3;
-  }
+  // kitty is GPU based terminal emulator
+  if (TERM === "xterm-kitty") return SPACE_TRUE_COLORS;
 
-  // eslint-disable-next-line regexp/no-unused-capturing-group
-  if (/-256(color)?$/i.test(env.TERM!)) {
-    return 2;
-  }
+  // check for 256 colors after ENV variables such as TERM, COLORTERM, TERMINAL_EMULATOR etc.
+  // terminals, that support 256 colors, e.g., native macOS terminal
+  if (/-256(?:colou?r)?$/i.test(TERM!)) return SPACE_256_COLORS;
 
-  if (/^screen|^xterm|^vt100|^vt220|^rxvt|color|ansi|cygwin|linux/i.test(env.TERM!)) {
-    return 1;
-  }
+  // known terminals supporting 16 colors
+  if (/^screen|^tmux|^xterm|^vt[1-5]\d\d?|^ansi|color|cygwin|linux|mintty|rxvt/i.test(TERM!)) return SPACE_16_COLORS;
 
-  if ("COLORTERM" in env) {
-    return 1;
-  }
-
-  return 0;
+  // if we can't detect the terminal, we assume it supports true colors
+  // because most modern terminals support true colors
+  return SPACE_TRUE_COLORS;
 }
 
 /**
- * Check if the browser supports colors
- * @returns {boolean} Whether the browser supports colors
+ * Checks if the terminal supports true color (24-bit color).
  *
- * @example
- * ```js
- * import { isColorsSupported } from "termenv";
+ * @param {typeof globalThis?} mockGlobal global object for testing purposes
+ * @returns {boolean} Returns true if the terminal supports true color, false otherwise
+ */
+export function isTrueColorSupported(mockGlobal?: typeof globalThis): boolean {
+  return getColorSpace(mockGlobal) === SPACE_TRUE_COLORS;
+}
+
+/**
+ * Determines if the terminal supports 256 colors.
  *
- * isColorsSupported();
- * // => true
- * ```
+ * @param {typeof globalThis?} mockGlobal global object for testing purposes
+ * @returns {boolean} Returns true if the terminal supports 256 colors, false otherwise
  */
-export function isColorsSupported(): boolean {
-  return getSupportedLevel() > 0;
+export function is256ColorSupported(mockGlobal?: typeof globalThis): boolean {
+  return getColorSpace(mockGlobal) >= SPACE_256_COLORS;
 }
 
 /**
- * Check if the environment supports true color
- * @returns {boolean} Whether the environment supports true color
+ * Determines if the terminal supports 16 colors.
+ *
+ * @param {typeof globalThis?} mockGlobal global object for testing purposes
+ * @returns {boolean} Returns true if the terminal supports 16 colors, false otherwise
  */
-export function isTrueColorSupported(): boolean {
-  return getSupportedLevel() >= 3;
+export function is16ColorSupported(mockGlobal?: typeof globalThis): boolean {
+  return getColorSpace(mockGlobal) >= SPACE_16_COLORS;
 }
 
 /**
- * Check if the environment supports 256 colors
- * @returns {boolean} Whether the environment supports 256 colors
+ * Determines if the terminal or environment supports colored output.
+ *
+ * @param {typeof globalThis?} mockGlobal global object for testing purposes
+ * @returns {boolean} Returns true if colors are supported, false otherwise
  */
-export function is256ColorSupported(): boolean {
-  return getSupportedLevel() >= 2;
-}
-
-/**
- * Check if the environment supports 16 colors
- * @returns {boolean} Whether the environment supports 16 colors
- */
-export function is16ColorSupported(): boolean {
-  return getSupportedLevel() >= 1;
+export function isColorsSupported(mockGlobal?: typeof globalThis): boolean {
+  return getColorSpace(mockGlobal) > SPACE_MONO;
 }
