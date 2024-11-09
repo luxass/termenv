@@ -12,6 +12,8 @@ export {
   getSupportedLevel,
 } from "./supports";
 
+export { getRuntimeConfig, type EnvRuntimeConfig } from "./env";
+
 export { isUnicodeSupported } from "./unicode";
 
 export { getWindowSize } from "./window-size";
