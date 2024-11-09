@@ -1,5 +1,5 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { WindowSize } from "../src/window-size";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { getWindowSize } from "../src/window-size";
 
 const mockStdout = vi.hoisted(() => ({

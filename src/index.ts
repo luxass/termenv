@@ -4,24 +4,22 @@
  * Termenv is a utility library for working with terminal environments.
  */
 
+export { type EnvRuntimeConfig, getRuntimeConfig } from "./env";
+
 export {
+  type ColorSpace,
+  getColorSpace,
+  is16ColorSupported,
+  is256ColorSupported,
   isColorsSupported,
   isTrueColorSupported,
-  is256ColorSupported,
-  is16ColorSupported,
-  getColorSpace,
   SPACE_16_COLORS,
-  type ColorSpace,
   SPACE_256_COLORS,
   SPACE_MONO,
   SPACE_TRUE_COLORS,
 } from "./supports";
 
-export { getRuntimeConfig, type EnvRuntimeConfig } from "./env";
-
 export { isUnicodeSupported } from "./unicode";
-
-export { getWindowSize } from "./window-size";
 
 export {
   ANSI_REGEX,
@@ -34,3 +32,5 @@ export {
   RESET,
   strip,
 } from "./utils";
+
+export { getWindowSize } from "./window-size";

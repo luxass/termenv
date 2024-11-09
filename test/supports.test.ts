@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest";
 import {
+  getColorSpace,
   SPACE_16_COLORS,
   SPACE_256_COLORS,
   SPACE_MONO,
   SPACE_TRUE_COLORS,
-  getColorSpace,
 } from "../src/supports";
 
 describe("detect CI color spaces", () => {
