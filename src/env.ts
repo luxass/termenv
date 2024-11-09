@@ -38,13 +38,14 @@ export interface EnvRuntimeConfig {
  * const config = getRuntimeConfig(mockGlobal);
  * ```
  */
-export function getRuntimeConfig(mockGlobal?: typeof globalThis): EnvRuntimeConfig {
+export function getRuntimeConfig<TGlobal = typeof globalThis>(mockGlobal?: TGlobal): EnvRuntimeConfig {
   const _global = mockGlobal || globalThis;
   const Deno = (_global as any).Deno;
   const Bun = (_global as any).Bun;
   const isDeno = Deno != null;
   const isBun = Bun != null;
 
+  // @ts-ignore - we fallback to using `{}` so this is fine.
   // eslint-disable-next-line node/prefer-global/process
   const proc = _global.process || Deno || {};
 
