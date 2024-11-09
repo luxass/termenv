@@ -14,7 +14,7 @@ npm install termenv
 
 ```ts
 import {
-  getSupportedLevel,
+  getColorSpace,
   is16ColorSupported,
   is256ColorSupported,
   isColorsSupported,
@@ -22,7 +22,7 @@ import {
   isUnicodeSupported,
 } from "termenv";
 
-console.log(getSupportedLevel()); // => 3 | 2 | 1 | 0
+console.log(getColorSpace()); // => 3 | 2 | 1 | 0
 // 3: 24-bit color support (16m colors)
 // 2: 8-bit color support (256 colors)
 // 1: 4-bit color support (16 colors)
