@@ -81,17 +81,19 @@ describe("flags & options", () => {
 });
 
 it("use True Color for non-detectable terminals", () => {
-  const received = getColorSpace({
+  const colorSpace = getColorSpace({
     process: {
-      platform: "linux",
+      platform: process.platform,
       env: {
         TERM: "thisisnotarealterminal",
       },
       argv: [],
+      stdout: { isTTY: true },
+      stderr: { isTTY: true },
     },
   });
-  const expected = SPACE_TRUE_COLORS;
-  expect(received).toEqual(expected);
+
+  expect(colorSpace).toEqual(SPACE_TRUE_COLORS);
 });
 
 describe("detect color space in terminals", () => {
