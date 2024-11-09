@@ -110,10 +110,13 @@ describe("detect color space in terminals", () => {
     ["vt320-w", SPACE_16_COLORS],
     ["vt52", SPACE_16_COLORS],
     ["vt525", SPACE_16_COLORS],
-  ])("should return %s for %s", (term, expected) => {
+  ])("should return term %s with space %s", (term, expected) => {
+    // windows supports true colors in 2024, so all of these `TERM` values
+    // are returned as space 3 (true colors) when on windows.
+    const platform = process.platform === "win32" ? "linux" : process.platform;
     const received = getColorSpace({
       process: {
-        platform: process.platform,
+        platform,
         env: {
           TERM: term,
         },
