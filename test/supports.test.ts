@@ -1,4 +1,3 @@
-import { platform } from "node:process";
 import { describe, expect, it } from "vitest";
 import {
   SPACE_16_COLORS,
@@ -6,7 +5,6 @@ import {
   SPACE_MONO,
   SPACE_TRUE_COLORS,
   getColorSpace,
-  getColorSpaceByRuntime,
 } from "../src/supports";
 
 describe("detect CI color spaces", () => {
