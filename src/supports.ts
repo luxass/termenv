@@ -65,14 +65,14 @@ export function getColorSpace<TGlobal = typeof globalThis>(mockGlobal?: TGlobal)
 
   const isForceDisabled
     = "NO_COLOR" in runtime.env
-    || forceColor === SPACE_MONO
+      || forceColor === SPACE_MONO
     // --no-color --color=false --color=never
-    || hasFlag(runtime.argv, /^-{1,2}(?:no-color|color=(?:false|never))$/);
+      || hasFlag(runtime.argv, /^-{1,2}(?:no-color|color=(?:false|never))$/);
 
   // --color --color=true --color=always
   const isForceEnabled
     = (FORCE_COLOR in runtime.env && forceColor)
-    || hasFlag(runtime.argv, /^-{1,2}color=?(?:true|always)?$/);
+      || hasFlag(runtime.argv, /^-{1,2}color=?(?:true|always)?$/);
 
   if (isForceDisabled) return SPACE_MONO;
 
