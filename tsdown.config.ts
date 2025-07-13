@@ -15,6 +15,5 @@ export default defineConfig({
   treeshake: true,
   publint: true,
   exports: true,
-  bundle: true,
-  clean: false,
+  clean: true,
 });
