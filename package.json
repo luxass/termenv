@@ -32,66 +32,36 @@
   ],
   "exports": {
     ".": {
-      "import": {
-        "types": "./dist/index.d.ts",
-        "default": "./dist/index.mjs"
-      },
-      "require": {
-        "types": "./dist/index.d.cts",
-        "default": "./dist/index.cjs"
-      }
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
     },
     "./supports": {
-      "import": {
-        "types": "./dist/supports.d.ts",
-        "default": "./dist/supports.mjs"
-      },
-      "require": {
-        "types": "./dist/supports.d.cts",
-        "default": "./dist/supports.cjs"
-      }
+      "import": "./dist/supports.js",
+      "require": "./dist/supports.cjs"
     },
     "./unicode": {
-      "import": {
-        "types": "./dist/unicode.d.ts",
-        "default": "./dist/unicode.mjs"
-      },
-      "require": {
-        "types": "./dist/unicode.d.cts",
-        "default": "./dist/unicode.cjs"
-      }
+      "import": "./dist/unicode.js",
+      "require": "./dist/unicode.cjs"
     },
     "./utils": {
-      "import": {
-        "types": "./dist/utils.d.ts",
-        "default": "./dist/utils.mjs"
-      },
-      "require": {
-        "types": "./dist/utils.d.cts",
-        "default": "./dist/utils.cjs"
-      }
+      "import": "./dist/utils.js",
+      "require": "./dist/utils.cjs"
     },
     "./window-size": {
-      "import": {
-        "types": "./dist/window-size.d.ts",
-        "default": "./dist/window-size.mjs"
-      },
-      "require": {
-        "types": "./dist/window-size.d.cts",
-        "default": "./dist/window-size.cjs"
-      }
+      "import": "./dist/window-size.js",
+      "require": "./dist/window-size.cjs"
     },
     "./package.json": "./package.json"
   },
-  "main": "dist/index.cjs",
-  "module": "dist/index.mjs",
-  "types": "dist/index.d.ts",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.cts",
   "files": [
     "dist"
   ],
   "scripts": {
-    "build": "tsup",
-    "dev": "tsup --watch",
+    "build": "tsdown",
+    "dev": "tsdown --watch",
     "lint": "eslint . --report-unused-disable-directives",
     "test": "vitest --run",
     "test:watch": "vitest",
@@ -102,7 +72,8 @@
     "@types/node": "^22.9.0",
     "eslint": "^9.22.0",
     "eslint-plugin-format": "^1.0.1",
-    "tsup": "^8.4.0",
+    "publint": "^0.3.12",
+    "tsdown": "^0.12.9",
     "typescript": "^5.8.2",
     "vitest": "^3.0.8"
   }

@@ -1,4 +1,4 @@
-import { defineConfig } from "tsup";
+import { defineConfig } from "tsdown";
 
 export default defineConfig({
   entry: [
@@ -13,11 +13,8 @@ export default defineConfig({
   target: "es2022",
   dts: true,
   treeshake: true,
+  publint: true,
+  exports: true,
   bundle: true,
   clean: false,
-  outExtension(ctx) {
-    return {
-      js: ctx.format === "cjs" ? ".cjs" : ".mjs",
-    };
-  },
 });
