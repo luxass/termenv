@@ -59,6 +59,9 @@
   "files": [
     "dist"
   ],
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "build": "tsdown",
     "dev": "tsdown --watch",
