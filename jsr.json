@@ -9,7 +9,7 @@
     "./window-size": "./src/window-size.ts"
   },
   "exclude": [
-    "tsup.config.ts",
+    "tsdown.config.ts",
     "eslint.config.js",
     "pnpm-lock.yaml",
     ".github/**",
