@@ -1,7 +1,7 @@
 /// <reference lib="deno.ns" />
 
 import { assertEquals } from "@std/assert";
-import { stub } from "jsr:@std/testing/mock";
+import { stub } from "@std/testing/mock";
 import { getRuntimeConfig } from "../src/env.ts";
 
 Deno.test("should detect Deno runtime", () => {
