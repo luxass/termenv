@@ -8,7 +8,7 @@ export default defineConfig({
     "./src/utils.ts",
     "./src/window-size.ts",
   ],
-  format: ["cjs", "esm"],
+  format: ["esm"],
   platform: "node",
   target: "es2022",
   dts: true,
