@@ -96,7 +96,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        bun-version: [1.0.x, 1.1.x]
+        bun-version: [1.0.x, 1.1.x, 1.2.x]
 
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
@@ -107,6 +107,7 @@ jobs:
         uses: oven-sh/setup-bun@4bc047ad259df6fc24a6c9b0f9a0cb08cf17fbe5 # v1.2.2
         with:
           bun-version: ${{ matrix.bun-version }}
+          no-cache: true
 
       - name: run bun test
         run: bun test test-bun/
