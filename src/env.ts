@@ -45,13 +45,7 @@ export function getRuntimeConfig<TGlobal = typeof globalThis>(mockGlobal?: TGlob
   // eslint-disable-next-line node/prefer-global/process
   const proc = (_global as any).process || {};
 
-  let env = proc.env ?? {};
-  try {
-    // will trigger a Deno permission request, if running in Deno
-    env = proc.env;
-  } catch {
-    env = {};
-  }
+  const env = proc.env ?? {};
 
   const isDeno = Deno != null;
   const isBun = Bun != null;
