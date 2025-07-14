@@ -12,7 +12,7 @@ it("should return correct config for Node.js environment", () => {
         node: "24.3.0",
       },
     },
-  } as any;
+  };
 
   const config = getRuntimeConfig(mockGlobal);
 
@@ -34,7 +34,7 @@ it("should handle missing environment variables gracefully", () => {
         node: "24.3.0",
       },
     },
-  } as any;
+  };
 
   const config = getRuntimeConfig(mockGlobal);
 
