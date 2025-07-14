@@ -115,7 +115,7 @@ Deno.test("should handle environment variable access", () => {
 
   try {
     const config = getRuntimeConfig();
-    
+
     assertEquals(config.runtime, "deno");
     assertEquals(typeof config.env, "object");
   } finally {
