@@ -86,11 +86,6 @@ export function getColorSpace<TGlobal = typeof globalThis>(mockGlobal?: TGlobal)
     : colorSpace as ColorSpace;
 }
 
-const TRUE_COLOR_CI = [
-  "GITHUB_ACTIONS",
-  "GITEA_ACTIONS",
-];
-
 export function getColorSpaceByRuntime(environment: TerminalEnvironmentConfig): ColorSpace {
   const { TERM, COLORTERM } = environment.env;
 
@@ -105,7 +100,7 @@ export function getColorSpaceByRuntime(environment: TerminalEnvironmentConfig): 
   // CI tools
   // https://github.com/watson/ci-info/blob/master/vendors.json
   if ("CI" in environment.env) {
-    if (TRUE_COLOR_CI.some((key) => key in environment.env)) return SPACE_TRUE_COLORS;
+    if (environment.env.GITHUB_ACTIONS != null) return SPACE_TRUE_COLORS;
 
     // others CI supports only 16 colors
     return SPACE_16_COLORS;
