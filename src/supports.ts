@@ -43,10 +43,16 @@ function hasFlag(argv: string[], regex: RegExp): boolean {
 
 export function getColorSpace<TGlobal = typeof globalThis>(mockGlobal?: TGlobal): ColorSpace {
   let colorSpace = -1;
-  const runtime = getRuntimeConfig(mockGlobal);
+  const {
+    runtime,
+    env,
+    argv,
+    isTTY,
+    platform,
+  } = getRuntimeConfig(mockGlobal);
 
   // runtime is deno, and no env is set due to missing `--allow-env` flag
-  if (runtime.runtime === "deno" && Object.keys(runtime.env).length === 0) {
+  if (runtime === "deno" && Object.keys(env).length === 0) {
     colorSpace = SPACE_MONO;
   }
 
@@ -54,7 +60,7 @@ export function getColorSpace<TGlobal = typeof globalThis>(mockGlobal?: TGlobal)
   // it should force the addition of ANSI color.
   // See https://force-color.org
   const FORCE_COLOR = "FORCE_COLOR";
-  const forceColorValue = runtime.env[FORCE_COLOR];
+  const forceColorValue = env[FORCE_COLOR];
   const forceColorNum = Number.parseInt(forceColorValue!);
   const forceColor
     = forceColorValue === "false"
@@ -64,23 +70,23 @@ export function getColorSpace<TGlobal = typeof globalThis>(mockGlobal?: TGlobal)
         : forceColorNum;
 
   const isForceDisabled
-    = "NO_COLOR" in runtime.env
+    = "NO_COLOR" in env
       || forceColor === SPACE_MONO
     // --no-color --color=false --color=never
-      || hasFlag(runtime.argv, /^-{1,2}(?:no-color|color=(?:false|never))$/);
+      || hasFlag(argv, /^-{1,2}(?:no-color|color=(?:false|never))$/);
 
   // --color --color=true --color=always
   const isForceEnabled
-    = (FORCE_COLOR in runtime.env && forceColor)
-      || hasFlag(runtime.argv, /^-{1,2}color=?(?:true|always)?$/);
+    = (FORCE_COLOR in env && forceColor)
+      || hasFlag(argv, /^-{1,2}color=?(?:true|always)?$/);
 
   if (isForceDisabled) return SPACE_MONO;
 
   if (colorSpace < 0) {
     colorSpace = getColorSpaceByRuntime(
-      runtime.env,
-      runtime.isTTY,
-      runtime.platform === "win32",
+      env,
+      isTTY,
+      platform === "win32",
     );
   }
 
