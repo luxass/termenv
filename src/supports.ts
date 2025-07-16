@@ -21,7 +21,8 @@
  * ```
  */
 
-import { getRuntimeConfig } from "./env";
+import type { TerminalEnvironmentConfig } from "./env";
+import { getTerminalEnvironment } from "./env";
 
 export type ColorSpace = 0 | 1 | 2 | 3;
 
@@ -43,16 +44,10 @@ function hasFlag(argv: string[], regex: RegExp): boolean {
 
 export function getColorSpace<TGlobal = typeof globalThis>(mockGlobal?: TGlobal): ColorSpace {
   let colorSpace = -1;
-  const {
-    runtime,
-    env,
-    argv,
-    isTTY,
-    platform,
-  } = getRuntimeConfig(mockGlobal);
+  const environment = getTerminalEnvironment(mockGlobal);
 
   // runtime is deno, and no env is set due to missing `--allow-env` flag
-  if (runtime === "deno" && Object.keys(env).length === 0) {
+  if (environment.runtime === "deno" && Object.keys(environment.env).length === 0) {
     colorSpace = SPACE_MONO;
   }
 
@@ -60,7 +55,7 @@ export function getColorSpace<TGlobal = typeof globalThis>(mockGlobal?: TGlobal)
   // it should force the addition of ANSI color.
   // See https://force-color.org
   const FORCE_COLOR = "FORCE_COLOR";
-  const forceColorValue = env[FORCE_COLOR];
+  const forceColorValue = environment.env[FORCE_COLOR];
   const forceColorNum = Number.parseInt(forceColorValue!);
   const forceColor
     = forceColorValue === "false"
@@ -70,24 +65,20 @@ export function getColorSpace<TGlobal = typeof globalThis>(mockGlobal?: TGlobal)
         : forceColorNum;
 
   const isForceDisabled
-    = "NO_COLOR" in env
+    = "NO_COLOR" in environment.env
       || forceColor === SPACE_MONO
     // --no-color --color=false --color=never
-      || hasFlag(argv, /^-{1,2}(?:no-color|color=(?:false|never))$/);
+      || hasFlag(environment.argv, /^-{1,2}(?:no-color|color=(?:false|never))$/);
 
   // --color --color=true --color=always
   const isForceEnabled
-    = (FORCE_COLOR in env && forceColor)
-      || hasFlag(argv, /^-{1,2}color=?(?:true|always)?$/);
+    = (FORCE_COLOR in environment.env && forceColor)
+      || hasFlag(environment.argv, /^-{1,2}color=?(?:true|always)?$/);
 
   if (isForceDisabled) return SPACE_MONO;
 
   if (colorSpace < 0) {
-    colorSpace = getColorSpaceByRuntime(
-      env,
-      isTTY,
-      platform === "win32",
-    );
+    colorSpace = getColorSpaceByRuntime(environment);
   }
 
   return isForceEnabled && colorSpace === SPACE_MONO
@@ -100,31 +91,31 @@ const TRUE_COLOR_CI = [
   "GITEA_ACTIONS",
 ];
 
-export function getColorSpaceByRuntime(env: Record<string, string | undefined>, isTTY: boolean, isWin: boolean): ColorSpace {
-  const { TERM, COLORTERM } = env;
+export function getColorSpaceByRuntime(environment: TerminalEnvironmentConfig): ColorSpace {
+  const { TERM, COLORTERM } = environment.env;
 
   // Azure DevOps CI
   // https://learn.microsoft.com/en-us/azure/devops/pipelines/build/variables?view=azure-devops&tabs=yaml
-  if ("TF_BUILD" in env) return SPACE_16_COLORS;
+  if ("TF_BUILD" in environment.env) return SPACE_16_COLORS;
 
   // https://youtrack.jetbrains.com/issue/TW-62063/Expand-ANSI-coloring-support-to-include-256-color-set
   // JetBrains TeamCity support 256 colors since 2020.1.1 (2020-06-23)
-  if ("TEAMCITY_VERSION" in env) return SPACE_256_COLORS;
+  if ("TEAMCITY_VERSION" in environment.env) return SPACE_256_COLORS;
 
   // CI tools
   // https://github.com/watson/ci-info/blob/master/vendors.json
-  if ("CI" in env) {
-    if (TRUE_COLOR_CI.some((key) => key in env)) return SPACE_TRUE_COLORS;
+  if ("CI" in environment.env) {
+    if (TRUE_COLOR_CI.some((key) => key in environment.env)) return SPACE_TRUE_COLORS;
 
     // others CI supports only 16 colors
     return SPACE_16_COLORS;
   }
 
   // unknown output or colors are not supported
-  if (!isTTY || /-mono|dumb/i.test(TERM!)) return SPACE_MONO;
+  if (!environment.isTTY || /-mono|dumb/i.test(TERM!)) return SPACE_MONO;
 
   // truecolor support starts from Windows 10 build 14931 (2016-09-21), in 2024 we assume modern Windows is used
-  if (isWin) return SPACE_TRUE_COLORS;
+  if (environment.platform === "win32") return SPACE_TRUE_COLORS;
 
   // terminals, that support truecolor, e.g., iTerm, VSCode
   if (COLORTERM === "truecolor" || COLORTERM === "24bit") return SPACE_TRUE_COLORS;

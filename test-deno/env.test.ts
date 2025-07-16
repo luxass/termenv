@@ -2,10 +2,10 @@
 
 import { assertEquals } from "@std/assert";
 import { stub } from "@std/testing/mock";
-import { getRuntimeConfig } from "../src/env.ts";
+import { getTerminalEnvironment } from "../src/env.ts";
 
 Deno.test("should detect Deno runtime", () => {
-  const config = getRuntimeConfig();
+  const config = getTerminalEnvironment();
 
   assertEquals(config.runtime, "deno");
   assertEquals(typeof config.env, "object");
@@ -15,7 +15,7 @@ Deno.test("should detect Deno runtime", () => {
 });
 
 Deno.test("should use Deno-specific properties", () => {
-  const config = getRuntimeConfig();
+  const config = getTerminalEnvironment();
 
   assertEquals(config.runtime, "deno");
   assertEquals(config.platform, Deno.build.os);
@@ -33,7 +33,7 @@ Deno.test("should handle mock Node.js environment", () => {
     },
   };
 
-  const config = getRuntimeConfig(mockGlobal);
+  const config = getTerminalEnvironment(mockGlobal);
 
   assertEquals(config.env.NODE_ENV, "test");
   assertEquals(config.isTTY, true);
@@ -53,7 +53,7 @@ Deno.test("should handle mock Bun environment", () => {
     },
   };
 
-  const config = getRuntimeConfig(mockGlobal);
+  const config = getTerminalEnvironment(mockGlobal);
 
   assertEquals(config.env.BUN_ENV, "test");
   assertEquals(config.isTTY, false);
@@ -73,7 +73,7 @@ Deno.test("should handle mock browser environment", () => {
     },
   };
 
-  const config = getRuntimeConfig(mockGlobal);
+  const config = getTerminalEnvironment(mockGlobal);
 
   assertEquals(config.env, {});
   assertEquals(config.isTTY, false);
@@ -97,7 +97,7 @@ Deno.test("should handle mock Deno environment", () => {
     },
   };
 
-  const config = getRuntimeConfig(mockGlobal);
+  const config = getTerminalEnvironment(mockGlobal);
 
   assertEquals(config.runtime, "deno");
   assertEquals(config.env.DENO_ENV, "test");
@@ -114,7 +114,7 @@ Deno.test("should handle environment variable access", () => {
   });
 
   try {
-    const config = getRuntimeConfig();
+    const config = getTerminalEnvironment();
 
     assertEquals(config.runtime, "deno");
     assertEquals(typeof config.env, "object");

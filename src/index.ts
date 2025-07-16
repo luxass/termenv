@@ -4,7 +4,7 @@
  * Termenv is a utility library for working with terminal environments.
  */
 
-export { type EnvRuntimeConfig, getRuntimeConfig } from "./env";
+export { type TerminalEnvironmentConfig as EnvRuntimeConfig, getTerminalEnvironment as getRuntimeConfig } from "./env";
 
 export {
   type ColorSpace,

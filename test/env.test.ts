@@ -1,5 +1,5 @@
 import { expect, it } from "vitest";
-import { getRuntimeConfig } from "../src/env";
+import { getTerminalEnvironment } from "../src/env";
 
 it("should return correct config for Node.js environment", () => {
   const mockGlobal = {
@@ -14,7 +14,7 @@ it("should return correct config for Node.js environment", () => {
     },
   };
 
-  const config = getRuntimeConfig(mockGlobal);
+  const config = getTerminalEnvironment(mockGlobal);
 
   expect(config.env.NODE_ENV).toBe("test");
   expect(config.isTTY).toBe(true);
@@ -36,7 +36,7 @@ it("should handle missing environment variables gracefully", () => {
     },
   };
 
-  const config = getRuntimeConfig(mockGlobal);
+  const config = getTerminalEnvironment(mockGlobal);
 
   expect(config.env).toEqual({});
   expect(config.isTTY).toBe(false);

@@ -1,7 +1,7 @@
 /**
  * Configuration interface for environment runtime information.
  */
-export interface EnvRuntimeConfig {
+export interface TerminalEnvironmentConfig {
   /**
    * Indicates whether the current environment supports TTY capabilities
    */
@@ -25,20 +25,22 @@ export interface EnvRuntimeConfig {
  *
  * @param {globalThis} mockGlobal - Optional global object to use instead of the default globalThis.
  *
- * @returns {EnvRuntimeConfig} The runtime configuration object
+ * @returns {TerminalEnvironmentConfig} The runtime configuration object
  *
  * @example
  * ```ts
- * const config = getRuntimeConfig();
+ * import { getTerminalEnvironment } from "termenv/env";
+ *
+ * const config = getTerminalEnvironment();
  * console.log(config.runtime); // 'node', 'deno', or 'bun'
  * console.log(config.env.NODE_ENV); // Access environment variables
  *
  * // For mock testing
  * const mockGlobal = { process: { env: { NODE_ENV: 'development' } } };
- * const config = getRuntimeConfig(mockGlobal);
+ * const config = getTerminalEnvironment(mockGlobal);
  * ```
  */
-export function getRuntimeConfig<TGlobal = typeof globalThis>(mockGlobal?: TGlobal): EnvRuntimeConfig {
+export function getTerminalEnvironment<TGlobal = typeof globalThis>(mockGlobal?: TGlobal): TerminalEnvironmentConfig {
   const _global = mockGlobal || globalThis;
   const Deno = (_global as any).Deno;
   const Bun = (_global as any).Bun;

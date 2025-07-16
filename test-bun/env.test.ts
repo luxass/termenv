@@ -1,8 +1,8 @@
 import { expect, test } from "bun:test";
-import { getRuntimeConfig } from "../src/env.ts";
+import { getTerminalEnvironment } from "../src/env.ts";
 
 test("should detect Bun runtime", () => {
-  const config = getRuntimeConfig();
+  const config = getTerminalEnvironment();
 
   expect(config.runtime).toBe("bun");
   expect(typeof config.env).toBe("object");
@@ -12,7 +12,7 @@ test("should detect Bun runtime", () => {
 });
 
 test("should use Bun-specific properties", () => {
-  const config = getRuntimeConfig();
+  const config = getTerminalEnvironment();
 
   expect(config.runtime).toBe("bun");
   expect(config.platform).toBe(process.platform);
@@ -30,7 +30,7 @@ test("should handle mock Node.js environment", () => {
     },
   };
 
-  const config = getRuntimeConfig(mockGlobal);
+  const config = getTerminalEnvironment(mockGlobal);
 
   expect(config.env.NODE_ENV).toBe("test");
   expect(config.isTTY).toBe(true);
@@ -50,7 +50,7 @@ test("should handle mock Bun environment", () => {
     },
   };
 
-  const config = getRuntimeConfig(mockGlobal);
+  const config = getTerminalEnvironment(mockGlobal);
 
   expect(config.env.BUN_ENV).toBe("test");
   expect(config.isTTY).toBe(false);
@@ -70,7 +70,7 @@ test("should handle mock browser environment", () => {
     },
   };
 
-  const config = getRuntimeConfig(mockGlobal);
+  const config = getTerminalEnvironment(mockGlobal);
 
   expect(config.env).toEqual({});
   expect(config.isTTY).toBe(false);
@@ -94,7 +94,7 @@ test("should handle mock Deno environment", () => {
     },
   };
 
-  const config = getRuntimeConfig(mockGlobal);
+  const config = getTerminalEnvironment(mockGlobal);
 
   expect(config.runtime).toBe("deno");
   expect(config.env.DENO_ENV).toBe("test");
@@ -104,7 +104,7 @@ test("should handle mock Deno environment", () => {
 });
 
 test("should handle environment variable access", () => {
-  const config = getRuntimeConfig();
+  const config = getTerminalEnvironment();
 
   expect(config.runtime).toBe("bun");
   expect(typeof config.env).toBe("object");
