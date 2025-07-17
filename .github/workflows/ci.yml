@@ -96,7 +96,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # Bun Setup doesn't work with the wildcard cersion atm,
+        # Bun Setup doesn't work with the wildcard version atm,
         # so hardcoding them for now.
         bun-version: [1.0.36, 1.1.45, 1.2.18]
 
