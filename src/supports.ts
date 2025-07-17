@@ -119,6 +119,11 @@ export function getColorSpaceByRuntime(environment: TerminalEnvironmentConfig): 
   return SPACE_16_COLORS;
 }
 
+const TRUE_COLOR_CIS = [
+  "GITHUB_ACTIONS",
+  "GITEA_ACTIONS",
+];
+
 /**
  * Determines the color space support level for Continuous Integration (CI) environments.
  *
@@ -163,7 +168,9 @@ export function getColorSpaceByCI(environment: TerminalEnvironmentConfig): Color
   // CI tools
   // https://github.com/watson/ci-info/blob/master/vendors.json
   if (environment.env.CI) {
-    if (environment.env.GITHUB_ACTIONS != null) return SPACE_TRUE_COLORS;
+    if (TRUE_COLOR_CIS.some((ci) => environment.env[ci] != null)) {
+      return SPACE_TRUE_COLORS;
+    }
 
     // others CI supports only 16 colors
     return SPACE_16_COLORS;
