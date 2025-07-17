@@ -33,9 +33,7 @@
   "exports": {
     ".": "./dist/index.js",
     "./supports": "./dist/supports.js",
-    "./unicode": "./dist/unicode.js",
     "./utils": "./dist/utils.js",
-    "./window-size": "./dist/window-size.js",
     "./package.json": "./package.json"
   },
   "main": "./dist/index.js",
