@@ -43,6 +43,8 @@
       ".github/**",
       "scripts/**",
       "test/**",
+      "test-deno/**",
+      "test-bun/**",
       "tsconfig.json"
     ]
   }
