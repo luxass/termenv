@@ -4,9 +4,7 @@
   "exports": {
     ".": "./src/index.ts",
     "./utils": "./src/utils.ts",
-    "./supports": "./src/supports.ts",
-    "./unicode": "./src/unicode.ts",
-    "./window-size": "./src/window-size.ts"
+    "./supports": "./src/supports.ts"
   },
   "lint": {
     "rules": {
