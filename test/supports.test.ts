@@ -80,7 +80,7 @@ describe("flags & options", () => {
   });
 });
 
-it("use True Color for non-detectable terminals", () => {
+it("use 16-color for non-detectable terminals", () => {
   const colorSpace = getColorSpace({
     process: {
       platform: process.platform,
@@ -93,24 +93,24 @@ it("use True Color for non-detectable terminals", () => {
     },
   });
 
-  expect(colorSpace).toEqual(SPACE_TRUE_COLORS);
+  expect(colorSpace).toEqual(SPACE_16_COLORS);
 });
 
 describe("detect color space in terminals", () => {
   it.each([
-    ["xterm", SPACE_16_COLORS],
-    ["xterm-16colour", SPACE_16_COLORS],
-    ["xterm-256", SPACE_256_COLORS],
-    ["xterm-256color", SPACE_256_COLORS],
-    ["xterm-256colour", SPACE_256_COLORS],
-    ["xterm-kitty", SPACE_TRUE_COLORS],
-    ["tmux", SPACE_16_COLORS],
-    ["tmux-256color", SPACE_256_COLORS],
-    ["vt220", SPACE_16_COLORS],
-    ["vt320-w", SPACE_16_COLORS],
-    ["vt52", SPACE_16_COLORS],
-    ["vt525", SPACE_16_COLORS],
-  ])("should return term %s with space %s", (term, expected) => {
+    ["xterm", SPACE_16_COLORS, undefined],
+    ["xterm-16colour", SPACE_16_COLORS, undefined],
+    ["xterm-256", SPACE_256_COLORS, undefined],
+    ["xterm-256color", SPACE_256_COLORS, undefined],
+    ["xterm-256colour", SPACE_256_COLORS, undefined],
+    ["xterm-kitty", SPACE_TRUE_COLORS, "truecolor"],
+    ["tmux", SPACE_16_COLORS, undefined],
+    ["tmux-256color", SPACE_256_COLORS, undefined],
+    ["vt220", SPACE_16_COLORS, undefined],
+    ["vt320-w", SPACE_16_COLORS, undefined],
+    ["vt52", SPACE_16_COLORS, undefined],
+    ["vt525", SPACE_16_COLORS, undefined],
+  ])("should return term %s with space %s", (term, expected, colorTerm) => {
     // windows supports true colors in 2024, so all of these `TERM` values
     // are returned as space 3 (true colors) when on windows.
     const platform = process.platform === "win32" ? "linux" : process.platform;
@@ -119,6 +119,7 @@ describe("detect color space in terminals", () => {
         platform,
         env: {
           TERM: term,
+          COLORTERM: colorTerm,
         },
         argv: [],
         stdout: { isTTY: true },
