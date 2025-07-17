@@ -1,4 +1,13 @@
 {
+  "name": "@luxass/termenv",
+  "version": "0.5.1",
+  "exports": {
+    ".": "./src/index.ts",
+    "./utils": "./src/utils.ts",
+    "./supports": "./src/supports.ts",
+    "./unicode": "./src/unicode.ts",
+    "./window-size": "./src/window-size.ts"
+  },
   "lint": {
     "rules": {
       "exclude": ["no-sloppy-imports"]
@@ -27,5 +36,16 @@
     "@std/expect": "jsr:@std/expect@^1.0.4",
     "@std/assert": "jsr:@std/assert@^1.0.4",
     "@std/testing": "jsr:@std/testing@^1.0.4"
+  },
+  "publish": {
+    "exclude": [
+      "tsdown.config.ts",
+      "eslint.config.js",
+      "pnpm-lock.yaml",
+      ".github/**",
+      "scripts/**",
+      "test/**",
+      "tsconfig.json"
+    ]
   }
 }
