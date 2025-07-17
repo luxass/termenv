@@ -87,48 +87,89 @@ export function getColorSpace<TGlobal = typeof globalThis>(mockGlobal?: TGlobal)
     : colorSpace as ColorSpace;
 }
 
+export const COLORTERM_MAP: Record<string, ColorSpace> = {
+  "24bit": SPACE_TRUE_COLORS,
+  "truecolor": SPACE_TRUE_COLORS,
+  "ansi256": SPACE_256_COLORS,
+  "ansi": SPACE_16_COLORS,
+};
+
 export function getColorSpaceByRuntime(environment: TerminalEnvironmentConfig): ColorSpace {
-  const { TERM, COLORTERM } = environment.env;
+  const { env, isTTY } = environment;
 
-  // Azure DevOps CI
-  // https://learn.microsoft.com/en-us/azure/devops/pipelines/build/variables?view=azure-devops&tabs=yaml
-  if ("TF_BUILD" in environment.env) return SPACE_16_COLORS;
+  const level = COLORTERM_MAP[env.COLORTERM!];
+  // If COLORTERM is set, we use it to determine the color space.
+  if (level) return level;
 
+  const ciColorSpace = getColorSpaceByCI(environment);
+  if (ciColorSpace !== SPACE_MONO) return ciColorSpace;
+
+  // unknown output or colors are not supported
+  if (!isTTY || /-mono|dumb/i.test(env.TERM!)) return SPACE_MONO;
+
+  // truecolor support starts from Windows 10 build 14931 (2016-09-21), in 2024 we assume modern Windows is used
+  if (env.platform === "win32") return SPACE_TRUE_COLORS;
+
+  // check for 256 colors after ENV variables such as TERM, COLORTERM, TERMINAL_EMULATOR etc.
+  // terminals, that support 256 colors, e.g., native macOS terminal
+  if (/-256(?:colou?r)?$/i.test(env.TERM!)) return SPACE_256_COLORS;
+
+  // We default to 16-color support if no other conditions are met.
+  // This is safe since we have already checked most of the known terminals supporting 256 colors.
+  return SPACE_16_COLORS;
+}
+
+/**
+ * Determines the color space support level for Continuous Integration (CI) environments.
+ *
+ * This function detects specific CI platforms and returns the appropriate color support level
+ * based on their known capabilities. CI environments typically don't have TTY output but
+ * may still support ANSI colors for build logs and console output.
+ *
+ * @param {TerminalEnvironmentConfig} environment - The terminal environment configuration containing environment variables
+ * @returns {ColorSpace} The color space level supported by the detected CI environment:
+ *   - `SPACE_TRUE_COLORS` (3) for GitHub Actions
+ *   - `SPACE_256_COLORS` (2) for JetBrains TeamCity
+ *   - `SPACE_16_COLORS` (1) for Azure DevOps and other CI environments
+ *   - `undefined` if no CI environment is detected
+ *
+ * @example
+ * ```ts
+ * import { getTerminalEnvironment } from "termenv/env";
+ * import { getColorSpaceByCI } from "termenv/supports";
+ *
+ * const env = getTerminalEnvironment();
+ * const colorSpace = getColorSpaceByCI(env);
+ *
+ * if (colorSpace === SPACE_TRUE_COLORS) {
+ *   console.log('Running in GitHub Actions with true color support');
+ * } else if (colorSpace === SPACE_16_COLORS) {
+ *   console.log('Running in CI with basic color support');
+ * } else if (colorSpace === SPACE_MONO) {
+ *   console.log('Running in CI with no color support');
+ * }
+ * ```
+ */
+export function getColorSpaceByCI(environment: TerminalEnvironmentConfig): ColorSpace {
   // https://youtrack.jetbrains.com/issue/TW-62063/Expand-ANSI-coloring-support-to-include-256-color-set
   // JetBrains TeamCity support 256 colors since 2020.1.1 (2020-06-23)
-  if ("TEAMCITY_VERSION" in environment.env) return SPACE_256_COLORS;
+  if (environment.env.TEAMCITY_VERSION) return SPACE_256_COLORS;
+
+  // Azure DevOps CI
+  // Azure DevOps doesn't set "CI" variable, but it sets "TF_BUILD" variable
+  // https://learn.microsoft.com/en-us/azure/devops/pipelines/build/variables?view=azure-devops&tabs=yaml
+  if (environment.env.TF_BUILD) return SPACE_16_COLORS;
 
   // CI tools
   // https://github.com/watson/ci-info/blob/master/vendors.json
-  if ("CI" in environment.env) {
+  if (environment.env.CI) {
     if (environment.env.GITHUB_ACTIONS != null) return SPACE_TRUE_COLORS;
 
     // others CI supports only 16 colors
     return SPACE_16_COLORS;
   }
 
-  // unknown output or colors are not supported
-  if (!environment.isTTY || /-mono|dumb/i.test(TERM!)) return SPACE_MONO;
-
-  // truecolor support starts from Windows 10 build 14931 (2016-09-21), in 2024 we assume modern Windows is used
-  if (environment.platform === "win32") return SPACE_TRUE_COLORS;
-
-  // terminals, that support truecolor, e.g., iTerm, VSCode
-  if (COLORTERM === "truecolor" || COLORTERM === "24bit") return SPACE_TRUE_COLORS;
-
-  // kitty is GPU based terminal emulator
-  if (TERM === "xterm-kitty") return SPACE_TRUE_COLORS;
-
-  // check for 256 colors after ENV variables such as TERM, COLORTERM, TERMINAL_EMULATOR etc.
-  // terminals, that support 256 colors, e.g., native macOS terminal
-  if (/-256(?:colou?r)?$/i.test(TERM!)) return SPACE_256_COLORS;
-
-  // known terminals supporting 16 colors
-  if (/^screen|^tmux|^xterm|^vt[1-5]\d\d?|^ansi|color|cygwin|linux|mintty|rxvt/i.test(TERM!)) return SPACE_16_COLORS;
-
-  // if we can't detect the terminal, we assume it supports true colors
-  // because most modern terminals support true colors
-  return SPACE_TRUE_COLORS;
+  return SPACE_MONO;
 }
 
 /**
