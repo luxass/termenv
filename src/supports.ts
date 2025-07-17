@@ -24,8 +24,9 @@
 import type { TerminalEnvironmentConfig } from "./env";
 import { getTerminalEnvironment } from "./env";
 
-export type ColorSpace = 0 | 1 | 2 | 3;
+export type ColorSpace = -1 | 0 | 1 | 2 | 3;
 
+export const NO_COLOR = -1;
 export const SPACE_MONO = 0;
 export const SPACE_16_COLORS = 1;
 export const SPACE_256_COLORS = 2;
