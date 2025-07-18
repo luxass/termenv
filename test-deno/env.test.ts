@@ -1,5 +1,5 @@
 /// <reference lib="deno.ns" />
-import console from "node:console";
+
 import { assertEquals } from "@std/assert";
 import { stub } from "@std/testing/mock";
 import { getTerminalEnvironment } from "../src/env.ts";
