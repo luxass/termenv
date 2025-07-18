@@ -44,10 +44,19 @@ export function getTerminalEnvironment<TGlobal = typeof globalThis>(mockGlobal?:
   const _global = mockGlobal || globalThis;
   const Deno = (_global as any).Deno;
   const Bun = (_global as any).Bun;
+
   // eslint-disable-next-line node/prefer-global/process
   const proc = (_global as any).process || {};
+  let env = proc.env || {};
 
-  const env = proc.env ?? {};
+  if (Deno) {
+    try {
+      // a read on the env will trigger a Deno permission error if not allowed
+      Object.keys(env);
+    } catch {
+      env = {};
+    }
+  }
 
   const isDeno = Deno != null;
   const isBun = Bun != null;

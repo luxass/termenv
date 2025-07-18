@@ -1,5 +1,5 @@
 /// <reference lib="deno.ns" />
-
+import console from "node:console";
 import { assertEquals } from "@std/assert";
 import { stub } from "@std/testing/mock";
 import { getTerminalEnvironment } from "../src/env.ts";
@@ -121,4 +121,21 @@ Deno.test("should handle environment variable access", () => {
   } finally {
     envStub.restore();
   }
+});
+
+Deno.test({
+  name: "should fallback to empty object if env is not available",
+  permissions: { env: false },
+  fn: () => {
+    const { argv, env, isTTY, platform, runtime } = getTerminalEnvironment();
+
+    assertEquals(runtime, "deno");
+    assertEquals(typeof platform, "string");
+
+    assertEquals(Array.isArray(argv), true);
+    assertEquals(argv.length, 2);
+
+    assertEquals(isTTY, false);
+    assertEquals(typeof env, "object");
+  },
 });
