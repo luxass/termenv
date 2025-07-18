@@ -75,7 +75,7 @@ export function getColorSpace<TGlobal = typeof globalThis>(mockGlobal?: TGlobal)
     colorSpace = forceColor;
   }
 
-  if (!~colorSpace) colorSpace = getColorSpaceByRuntime(environment);
+  if (colorSpace === NO_COLOR) colorSpace = getColorSpaceByRuntime(environment);
 
   if (!forceColor || !!environment.env.NO_COLOR || hasFlag(environment.argv, /^-{1,2}(?:no-color|color=(?:false|never))$/)) {
     return SPACE_MONO;
