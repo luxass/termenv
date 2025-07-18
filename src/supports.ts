@@ -55,11 +55,6 @@ export function getColorSpace<TGlobal = typeof globalThis>(mockGlobal?: TGlobal)
   let colorSpace: ColorSpace = NO_COLOR;
   const environment = getTerminalEnvironment(mockGlobal);
 
-  // runtime is deno, and no env is set due to missing `--allow-env` flag
-  if (environment.runtime === "deno" && Object.keys(environment.env).length === 0) {
-    colorSpace = SPACE_MONO;
-  }
-
   // When FORCE_COLOR is present and not an empty string (regardless of its value, except `false` or `0`),
   // it should force the addition of ANSI color.
   // See https://force-color.org
