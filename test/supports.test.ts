@@ -45,7 +45,7 @@ describe("flags & options", () => {
     [["-color=always"], {}, SPACE_TRUE_COLORS],
 
     // force enable colors using env
-    [[], { FORCE_COLOR: "1" }, SPACE_TRUE_COLORS],
+    [[], { FORCE_COLOR: "3" }, SPACE_TRUE_COLORS],
     [[], { FORCE_COLOR: "true" }, SPACE_TRUE_COLORS],
     [[], { FORCE_COLOR: "always" }, SPACE_TRUE_COLORS],
 

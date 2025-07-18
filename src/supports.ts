@@ -43,8 +43,16 @@ function hasFlag(argv: string[], regex: RegExp): boolean {
   return !!argv.find((arg) => regex.test(arg));
 }
 
+const FORCE_MAP: Record<string, ColorSpace> = {
+  false: SPACE_MONO,
+  0: SPACE_MONO,
+  1: SPACE_16_COLORS,
+  2: SPACE_256_COLORS,
+  3: SPACE_TRUE_COLORS,
+};
+
 export function getColorSpace<TGlobal = typeof globalThis>(mockGlobal?: TGlobal): ColorSpace {
-  let colorSpace = -1;
+  let colorSpace: ColorSpace = NO_COLOR;
   const environment = getTerminalEnvironment(mockGlobal);
 
   // runtime is deno, and no env is set due to missing `--allow-env` flag
@@ -57,34 +65,23 @@ export function getColorSpace<TGlobal = typeof globalThis>(mockGlobal?: TGlobal)
   // See https://force-color.org
   const FORCE_COLOR = "FORCE_COLOR";
   const forceColorValue = environment.env[FORCE_COLOR];
-  const forceColorNum = Number.parseInt(forceColorValue!);
-  const forceColor
-    = forceColorValue === "false"
-      ? SPACE_MONO
-      : Number.isNaN(forceColorNum)
-        ? SPACE_TRUE_COLORS
-        : forceColorNum;
+  const forceColor = FORCE_MAP[forceColorValue!] ?? NO_COLOR;
 
-  const isForceDisabled
-    = "NO_COLOR" in environment.env
-      || forceColor === SPACE_MONO
-    // --no-color --color=false --color=never
-      || hasFlag(environment.argv, /^-{1,2}(?:no-color|color=(?:false|never))$/);
-
-  // --color --color=true --color=always
   const isForceEnabled
     = (FORCE_COLOR in environment.env && forceColor)
       || hasFlag(environment.argv, /^-{1,2}color=?(?:true|always)?$/);
 
-  if (isForceDisabled) return SPACE_MONO;
-
-  if (colorSpace < 0) {
-    colorSpace = getColorSpaceByRuntime(environment);
+  if (isForceEnabled) {
+    colorSpace = forceColor;
   }
 
-  return isForceEnabled && colorSpace === SPACE_MONO
-    ? SPACE_TRUE_COLORS
-    : colorSpace as ColorSpace;
+  if (!~colorSpace) colorSpace = getColorSpaceByRuntime(environment);
+
+  if (!forceColor || !!environment.env.NO_COLOR || hasFlag(environment.argv, /^-{1,2}(?:no-color|color=(?:false|never))$/)) {
+    return SPACE_MONO;
+  }
+
+  return isForceEnabled && !colorSpace ? SPACE_TRUE_COLORS : colorSpace;
 }
 
 export const COLORTERM_MAP: Record<string, ColorSpace> = {
