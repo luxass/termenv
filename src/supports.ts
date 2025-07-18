@@ -95,11 +95,16 @@ export const COLORTERM_MAP: Record<string, ColorSpace> = {
 };
 
 export function getColorSpaceByRuntime(environment: TerminalEnvironmentConfig): ColorSpace {
-  const { env, isTTY } = environment;
+  const { env, isTTY, platform } = environment;
 
   const level = COLORTERM_MAP[env.COLORTERM!];
   // If COLORTERM is set, we use it to determine the color space.
   if (level) return level;
+
+  if (platform === "browser") {
+    // In a browser environment, we assume true color support.
+    return SPACE_TRUE_COLORS;
+  }
 
   const ciColorSpace = getColorSpaceByCI(environment);
   if (ciColorSpace !== SPACE_MONO) return ciColorSpace;
