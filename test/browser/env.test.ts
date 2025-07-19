@@ -47,8 +47,8 @@ describe("env", () => {
         env: { TEST_VAR: "test_value" },
         argv: ["node", "script.js"],
         platform: "linux",
-        stdout: { isTTY: true }
-      }
+        stdout: { isTTY: true },
+      },
     };
 
     const environment = getTerminalEnvironment(mockGlobal);
@@ -66,8 +66,8 @@ describe("env", () => {
         versions: { node: "18.0.0" },
         env: {},
         argv: [],
-        platform: "darwin"
-      }
+        platform: "darwin",
+      },
     };
 
     const environment = getTerminalEnvironment(mockGlobal);
@@ -76,7 +76,7 @@ describe("env", () => {
 
   it("should handle missing process object gracefully", () => {
     const mockGlobal = {
-      window: { chrome: true }
+      window: { chrome: true },
     };
 
     const environment = getTerminalEnvironment(mockGlobal);

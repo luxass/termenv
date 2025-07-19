@@ -35,7 +35,7 @@ describe("utils", () => {
   });
 
   describe("strip", () => {
-    const consumptionCharacters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()_+1234567890-=[]{};\':"./>?,<\\|';
+    const consumptionCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()_+1234567890-=[]{};':\"./>?,<\\|";
 
     it("should strip ANSI escape codes from text", () => {
       const coloredText = "\u001B[31mHello, World!\u001B[0m";
@@ -112,7 +112,7 @@ describe("utils", () => {
 
       it("should not over-consume characters", () => {
         const testCodes = ["\u001B[0m", "\u001B[31m", "\u001B[2J", "\u001B[H"];
-        
+
         for (const code of testCodes) {
           for (const char of consumptionCharacters) {
             const input = code + char;
@@ -124,7 +124,7 @@ describe("utils", () => {
 
     describe("oSC sequences", () => {
       const terminators = ["\u0007", "\u001B\u005C", "\u009C"];
-      
+
       it("should strip window title sequences", () => {
         const input = `\u001B]0;Window Title\u0007`;
         expect(strip(input)).toBe(";Window Title\u0007");
