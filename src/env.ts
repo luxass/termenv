@@ -23,7 +23,7 @@ export interface TerminalEnvironmentConfig {
 /**
  * Returns runtime configuration details for the current JavaScript environment.
  *
- * @param {globalThis} mockGlobal - Optional global object to use instead of the default globalThis.
+ * @param {typeof globalThis} mockGlobal - Optional global object to use instead of the default globalThis.
  *
  * @returns {TerminalEnvironmentConfig} The runtime configuration object
  *
