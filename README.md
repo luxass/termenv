@@ -12,6 +12,9 @@ npm install termenv
 
 ## 📚 Usage
 
+> [!NOTE]
+> This package will work best in server environments like Node.js or Deno, but also works in browser environments.
+
 ```ts
 import {
   getColorSpace,
