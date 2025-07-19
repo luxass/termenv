@@ -71,16 +71,19 @@ export const ERASE_LINE_LEFT = "\x1B[1K";
  */
 export const ERASE_LINE_RIGHT = "\x1B[K";
 
-const ST = "(?:\\u0007|\\u001B\\u005C|\\u009C)";
-
 // https://github.com/chalk/ansi-regex/blob/827322a26097791c663a3688d5d938d197519a0f/index.js
+const ST = "(?:\\u0007|\\u001B\\u005C|\\u009C)";
+const ANSI_PATTERNS = [
+  `[\\u001B\\u009B][[\\]()#;?]*(?:(?:(?:(?:;[-a-zA-Z\\d\\/#&.:=?%@~_]+)*|[a-zA-Z\\d]+(?:;[-a-zA-Z\\d\\/#&.:=?%@~_]*)*)?${ST})`,
+  "(?:(?:\\d{1,4}(?:;\\d{0,4})*)?[\\dA-PR-TZcf-nq-uy=><~]))",
+];
+
 const ANSI_PATTERN = new RegExp(
-  [
-    `[\\u001B\\u009B][[\\]()#;?]*(?:(?:(?:(?:;[-a-zA-Z\\d\\/#&.:=?%@~_]+)*|[a-zA-Z\\d]+(?:;[-a-zA-Z\\d\\/#&.:=?%@~_]*)*)?${ST})`,
-    "(?:(?:\\d{1,4}(?:;\\d{0,4})*)?[\\dA-PR-TZcf-nq-uy=><~]))",
-  ].join("|"),
+  // eslint-disable-next-line regexp/no-useless-non-capturing-group, regexp/no-trivially-nested-quantifier, regexp/no-useless-quantifier, regexp/prefer-w, regexp/no-useless-escape
+  ANSI_PATTERNS.join("|"),
   "g",
 );
+
 /**
  * Strip Ansi Escape Codes from a string
  * @param {string} text - The text to strip
