@@ -12,7 +12,7 @@ describe("env browser integration", () => {
 
     it("should return browser-specific defaults", () => {
       const environment = getTerminalEnvironment();
-      
+
       // Browser-specific expectations
       expect(environment.argv).toEqual([]);
       expect(environment.isTTY).toBe(false);
@@ -112,9 +112,9 @@ describe("env browser integration", () => {
 
       const environment = getTerminalEnvironment(mockBrowserWithProcess);
       expect(environment.runtime).toBe("browser");
-      expect(environment.env).toEqual({ 
-        NODE_ENV: "production", 
-        API_URL: "https://api.example.com" 
+      expect(environment.env).toEqual({
+        NODE_ENV: "production",
+        API_URL: "https://api.example.com",
       });
       expect(environment.argv).toEqual(["node", "bundle.js", "--production"]);
       expect(environment.platform).toBe("linux");
@@ -133,7 +133,7 @@ describe("env browser integration", () => {
         undefined,
       ];
 
-      malformedGlobals.forEach(mockGlobal => {
+      malformedGlobals.forEach((mockGlobal) => {
         expect(() => getTerminalEnvironment(mockGlobal)).not.toThrow();
       });
     });
@@ -159,7 +159,7 @@ describe("env browser integration", () => {
   describe("real-world browser scenarios", () => {
     it("should work in Chrome-based iframe context", () => {
       const mockIframe = {
-        window: { 
+        window: {
           chrome: true,
           parent: { chrome: true },
           top: { location: { href: "https://parent.example.com" } },
@@ -172,7 +172,7 @@ describe("env browser integration", () => {
 
     it("should work in Chrome-based cross-origin iframe", () => {
       const mockCrossOriginIframe = {
-        window: { 
+        window: {
           chrome: true,
           // parent and top would throw SecurityError in real cross-origin iframe
         },
@@ -186,7 +186,7 @@ describe("env browser integration", () => {
       const mockPWA = {
         window: {
           chrome: true,
-          navigator: { 
+          navigator: {
             standalone: true,
             serviceWorker: { register: () => {} },
           },
@@ -200,7 +200,7 @@ describe("env browser integration", () => {
     it("should detect unknown for non-Chrome PWA", () => {
       const mockSafariPWA = {
         window: {
-          navigator: { 
+          navigator: {
             standalone: true,
             serviceWorker: { register: () => {} },
           },
