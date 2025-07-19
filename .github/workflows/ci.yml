@@ -79,9 +79,9 @@ jobs:
       - name: test (unit)
         run: pnpm test --project unit
 
-      - name: setup playwright
+      - name: install chromium through playwright
         if: matrix.os == 'ubuntu-latest'
-        run: pnpm exec playwright install
+        run: pnpm exec playwright install chromium
 
       - name: test (browser)
         if: matrix.os == 'ubuntu-latest'
