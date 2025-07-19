@@ -85,7 +85,7 @@ jobs:
 
       - name: test (browser)
         if: matrix.os == 'ubuntu-latest'
-        run: xvfb-run pnpm test
+        run: xvfb-run pnpm test --project browser
 
   deno:
     name: test-deno
