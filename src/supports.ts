@@ -79,7 +79,7 @@ export function getColorSpace<TGlobal = typeof globalThis>(mockGlobal?: TGlobal)
   return isForceEnabled && !colorSpace ? SPACE_TRUE_COLORS : colorSpace;
 }
 
-export const COLORTERM_MAP: Record<string, ColorSpace> = {
+const COLORTERM_MAP: Record<string, ColorSpace> = {
   "24bit": SPACE_TRUE_COLORS,
   "truecolor": SPACE_TRUE_COLORS,
   "ansi256": SPACE_256_COLORS,
