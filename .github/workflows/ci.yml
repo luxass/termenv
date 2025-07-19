@@ -4,30 +4,31 @@ on:
   push:
     branches:
       - main
-
   pull_request:
-    branches:
-      - main
+    types:
+      - opened
+      - synchronize
 
-permissions: {}
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-        with:
-          persist-credentials: false
+      - name: checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       - name: setup pnpm
         uses: pnpm/action-setup@a7487c7e89a18df4991f7f222e4898a00d66ddda # v4.1.0
 
-      - name: seyup node
+      - name: setup node
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: lts/*
 
-      - name: install
+      - name: install dependencies
         run: pnpm install --frozen-lockfile
 
       - name: build
@@ -40,8 +41,8 @@ jobs:
         run: pnpm typecheck
 
   test:
-    name: "test (os: ${{ matrix.os }}, node: ${{ matrix.node }})"
     runs-on: ${{ matrix.os }}
+
     strategy:
       matrix:
         node: [20, 22, lts/*]
@@ -50,24 +51,35 @@ jobs:
           - macos-latest
           - windows-latest
       fail-fast: false
-    steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-        with:
-          persist-credentials: false
 
-      - name: install pnpm
+    steps:
+      - name: checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: setup pnpm
         uses: pnpm/action-setup@a7487c7e89a18df4991f7f222e4898a00d66ddda # v4.1.0
 
-      - name: setup node ${{ matrix.node }}
+      - name: setup node v${{ matrix.node }}
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: ${{ matrix.node }}
 
-      - name: install
+      - name: install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: setup playwright
+        run: pnpm exec playwright install
+
+      - name: build
+        run: pnpm build
+
       - name: test
+        if: matrix.os != 'ubuntu-latest'
         run: pnpm test
+
+      - name: test
+        if: matrix.os == 'ubuntu-latest'
+        run: xvfb-run pnpm test
 
   deno:
     name: test-deno
@@ -86,6 +98,9 @@ jobs:
         uses: denoland/setup-deno@e95548e56dfa95d4e1a28d6f422fafe75c4c26fb # v2.0.3
         with:
           deno-version: ${{ matrix.deno-version }}
+
+      - name: install deno dependencies
+        run: deno install
 
       - name: run deno test
         run: deno test --config=deno.json --allow-env
@@ -110,6 +125,9 @@ jobs:
         with:
           bun-version: ${{ matrix.bun-version }}
           no-cache: true
+
+      - name: install
+        run: bun install
 
       - name: run bun test
         run: bun test test-bun/
