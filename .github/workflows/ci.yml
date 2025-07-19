@@ -72,17 +72,17 @@ jobs:
       - name: install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: setup playwright
-        run: pnpm exec playwright install
-
       - name: build
         run: pnpm build
 
-      - name: test
-        if: matrix.os != 'ubuntu-latest'
-        run: pnpm test
+      - name: test (unit)
+        run: pnpm test --project unit
 
-      - name: test
+      - name: setup playwright
+        if: matrix.os == 'ubuntu-latest'
+        run: pnpm exec playwright install
+
+      - name: test (browser)
         if: matrix.os == 'ubuntu-latest'
         run: xvfb-run pnpm test
 
@@ -104,7 +104,7 @@ jobs:
         with:
           deno-version: ${{ matrix.deno-version }}
 
-      - name: install deno dependencies
+      - name: install dependencies
         run: deno install
 
       - name: run deno test
@@ -131,7 +131,7 @@ jobs:
           bun-version: ${{ matrix.bun-version }}
           no-cache: true
 
-      - name: install
+      - name: install dependencies
         run: bun install
 
       - name: run bun test
