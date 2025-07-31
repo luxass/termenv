@@ -45,15 +45,12 @@ jobs:
       - name: detect tag
         id: tag
         run: |
-          LATEST_TAG=${GITHUB_REF#refs/tags/}
-          echo "tag=$LATEST_TAG" >> $GITHUB_OUTPUT
+          LATEST_TAG=$(git describe --tags --abbrev=0)
 
           if [[ "$LATEST_TAG" == *-* ]]; then
-            echo "npm_tag=next" >> $GITHUB_OUTPUT
-            echo "is_prerelease=true" >> $GITHUB_OUTPUT
+            echo "tag=next" >> $GITHUB_OUTPUT
           else
-            echo "npm_tag=latest" >> $GITHUB_OUTPUT
-            echo "is_prerelease=false" >> $GITHUB_OUTPUT
+            echo "tag=latest" >> $GITHUB_OUTPUT
           fi
 
       - name: publish to npm
