@@ -31,7 +31,8 @@ jobs:
       - name: update npm (oidc)
         run: npm install -g npm@latest
 
-      - run: pnpx changelogithub
+      - name: generate changelog
+        run: pnpx changelogithub
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
