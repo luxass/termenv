@@ -49,7 +49,7 @@ jobs:
 
     strategy:
       matrix:
-        node: [20, 22, lts/*]
+        node: [20, lts/*]
         os:
           - ubuntu-latest
           - macos-latest
