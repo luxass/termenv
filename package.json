@@ -19,16 +19,17 @@
     "url": "https://github.com/luxass/termenv/issues"
   },
   "keywords": [
-    "color",
-    "colour",
-    "colors",
     "terminal",
-    "console",
+    "environment",
+    "detection",
+    "color",
     "ansi",
     "tty",
-    "support",
-    "supports",
-    "farver"
+    "cli",
+    "color-support",
+    "truecolor",
+    "hyperlinks",
+    "unicode"
   ],
   "exports": {
     ".": "./dist/index.js",
