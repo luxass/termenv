@@ -15,7 +15,7 @@ importers:
         specifier: ^1.2.21
         version: 1.2.21(@types/react@19.1.8)
       '@types/node':
-        specifier: ^22.9.0
+        specifier: ^22.18.1
         version: 22.18.1
       '@vitest/browser':
         specifier: 3.2.4
