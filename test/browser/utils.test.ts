@@ -1,4 +1,4 @@
-/// <reference types="@vitest/browser/providers/playwright" />
+/// <reference types="@vitest/browser-playwright" />
 
 import { describe, expect, it } from "vitest";
 import {

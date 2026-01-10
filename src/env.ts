@@ -11,7 +11,7 @@ export interface TerminalEnvironmentConfig {
   argv: string[];
 
   /** The operating system platform (e.g., 'win32', 'darwin', 'linux') */
-  platform: string;
+  platform: string | undefined;
 
   /** Environment variables available to the process */
   env: Record<string, string | undefined>;
