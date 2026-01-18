@@ -1,6 +1,6 @@
 {
   "name": "@luxass/termenv",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "exports": {
     ".": "./src/index.ts",
     "./utils": "./src/utils.ts",
