@@ -1,3 +1,6 @@
+trustPolicy: no-downgrade
+shellEmulator: true
+
 onlyBuiltDependencies:
   - playwright
   - esbuild
