@@ -4,6 +4,8 @@ export default defineConfig({
   options: {
     typeAware: true,
     typeCheck: true,
+    respectEslintDisableDirectives: false,
+    reportUnusedDisableDirectives: "error",
   },
   ignorePatterns: ["dist/**", "coverage/**", "node_modules/**"],
   plugins: ["unicorn", "typescript", "oxc"],
@@ -26,6 +28,19 @@ export default defineConfig({
   },
   overrides: [
     {
+      // Keep the public generic signatures that accept cross-runtime mock globals.
+      files: ["src/env.ts", "src/supports.ts"],
+      rules: {
+        "typescript/no-unnecessary-type-parameters": "off",
+      },
+    },
+    {
+      files: ["src/env.ts"],
+      rules: {
+        "no-underscore-dangle": ["error", { allow: ["_global"] }],
+      },
+    },
+    {
       // Runtime detection intentionally probes untyped globals across runtimes.
       files: ["src/env.ts", "src/utils.ts", "test/browser/env.test.ts"],
       rules: {
@@ -34,7 +49,7 @@ export default defineConfig({
     },
     {
       // Keep all runtime suites linted without imposing test-length or async style.
-      files: ["test/**/*", "test-bun/**/*", "test-deno/**/*"],
+      files: ["test/**/*", "test-bun/**/*"],
       rules: {
         "eslint/max-lines": "off",
         "eslint/max-lines-per-function": "off",

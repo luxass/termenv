@@ -28,7 +28,8 @@ describe("utils browser integration", () => {
 
       expect(result).toContain("Line 1: Content");
       expect(result).not.toContain("\u001B[32m");
-      expect(end - start).toBeLessThan(100); // Should be performant
+      // Should be performant
+      expect(end - start).toBeLessThan(100);
     });
   });
 

@@ -39,37 +39,37 @@ import { getTerminalEnvironment } from "./env";
 /**
  * The ANSI escape code for resetting all attributes.
  */
-export const RESET = "\x1B[2J\x1B[0;0H";
+export const RESET = "\u001B[2J\u001B[0;0H";
 
 /**
  * The ANSI escape code for erasing the screen.
  */
-export const ERASE_SCREEN = "\x1B[2J";
+export const ERASE_SCREEN = "\u001B[2J";
 
 /**
  * The ANSI escape code for erasing the screen to the left of the cursor.
  */
-export const ERASE_SCREEN_LEFT = "\x1B[1J";
+export const ERASE_SCREEN_LEFT = "\u001B[1J";
 
 /**
  * The ANSI escape code for erasing the screen to the right of the cursor.
  */
-export const ERASE_SCREEN_RIGHT = "\x1B[J";
+export const ERASE_SCREEN_RIGHT = "\u001B[J";
 
 /**
  * The ANSI escape code for erasing the current line.
  */
-export const ERASE_LINE = "\x1B[2K";
+export const ERASE_LINE = "\u001B[2K";
 
 /**
  * The ANSI escape code for erasing the line to the left of the cursor.
  */
-export const ERASE_LINE_LEFT = "\x1B[1K";
+export const ERASE_LINE_LEFT = "\u001B[1K";
 
 /**
  * The ANSI escape code for erasing the line to the right of the cursor.
  */
-export const ERASE_LINE_RIGHT = "\x1B[K";
+export const ERASE_LINE_RIGHT = "\u001B[K";
 
 // https://github.com/chalk/ansi-regex/blob/827322a26097791c663a3688d5d938d197519a0f/index.js
 const ST = "(?:\\u0007|\\u001B\\u005C|\\u009C)";
@@ -78,11 +78,8 @@ const ANSI_PATTERNS = [
   "(?:(?:\\d{1,4}(?:;\\d{0,4})*)?[\\dA-PR-TZcf-nq-uy=><~]))",
 ];
 
-const ANSI_PATTERN = new RegExp(
-  // eslint-disable-next-line regexp/no-useless-non-capturing-group, regexp/no-trivially-nested-quantifier, regexp/no-useless-quantifier, regexp/prefer-w, regexp/no-useless-escape
-  ANSI_PATTERNS.join("|"),
-  "g",
-);
+// oxlint-disable-next-line require-unicode-regexp -- Preserve the upstream ANSI pattern's code-unit matching.
+const ANSI_PATTERN = new RegExp(ANSI_PATTERNS.join("|"), "g");
 
 /**
  * Strip Ansi Escape Codes from a string
@@ -170,7 +167,7 @@ export function getWindowSize<TGlobal = typeof globalThis>(
 ): WindowSize {
   const mockGlobal = options?.mockGlobal || globalThis;
 
-  // eslint-disable-next-line node/prefer-global/process
+  // oxlint-disable-next-line typescript/no-unsafe-assignment, typescript/no-unsafe-member-access -- Runtime globals are intentionally untyped.
   const proc = (mockGlobal as any).process || {};
 
   return {

@@ -50,8 +50,7 @@
     "test": "vitest --run",
     "test:watch": "vitest",
     "test:bun": "bun test ./test-bun",
-    "test:deno": "deno test --allow-env",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit && tsc --noEmit --project test-bun/tsconfig.json"
   },
   "devDependencies": {
     "@types/bun": "catalog:types",

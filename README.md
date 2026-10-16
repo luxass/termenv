@@ -2,7 +2,6 @@
 
 [![npm version][npm-version-src]][npm-version-href]
 [![npm downloads][npm-downloads-src]][npm-downloads-href]
-[![jsr version][jsr-version-src]][jsr-version-href]
 
 ## 📦 Installation
 
@@ -10,10 +9,13 @@
 npm install termenv
 ```
 
+Node.js 24.11.0 or later is required. CI also tests the latest Bun 1.1, 1.2, 1.3, and 1.4 releases.
+
 ## 📚 Usage
 
 > [!NOTE]
-> This package will work best in server environments like Node.js or Deno, but also works in browser environments.
+> This package works best in Node.js or Bun. It also works in browser environments.
+> Deno is no longer a tested or supported runtime. Its detection remains for compatibility.
 
 ```ts
 import {
@@ -22,8 +24,8 @@ import {
   is256ColorSupported,
   isColorsSupported,
   isTrueColorSupported,
-  isUnicodeSupported,
 } from "termenv";
+import { isUnicodeSupported } from "termenv/utils";
 
 console.log(getColorSpace()); // => 3 | 2 | 1 | 0
 // 3: 24-bit color support (16m colors)
@@ -80,5 +82,3 @@ Published under [MIT License](./LICENSE).
 [npm-version-href]: https://npmjs.com/package/termenv
 [npm-downloads-src]: https://img.shields.io/npm/dm/termenv?style=flat&colorA=18181B&colorB=4169E1
 [npm-downloads-href]: https://npmjs.com/package/termenv
-[jsr-version-src]: https://jsr.io/badges/@luxass/termenv?style=flat&labelColor=18181B&logoColor=4169E1
-[jsr-version-href]: https://jsr.io/@luxass/termenv

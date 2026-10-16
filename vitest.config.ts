@@ -12,7 +12,6 @@ export default defineConfig({
         test: {
           name: "unit",
           exclude: [
-            "test-deno/**/*.test.ts",
             "test-bun/**/*.test.ts",
             "test/browser/**/*.test.ts",
             ...configDefaults.exclude,
@@ -23,12 +22,7 @@ export default defineConfig({
       {
         test: {
           name: "browser",
-          exclude: [
-            "test-deno/**/*.test.ts",
-            "test-bun/**/*.test.ts",
-            "test/*.test.ts",
-            ...configDefaults.exclude,
-          ],
+          exclude: ["test-bun/**/*.test.ts", "test/*.test.ts", ...configDefaults.exclude],
           include: ["test/browser/**/*.test.ts"],
           browser: {
             enabled: true,
