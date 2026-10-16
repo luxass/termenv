@@ -15,5 +15,12 @@ export default defineConfig({
     newlinesBetween: true,
     order: "asc",
   },
-  ignorePatterns: ["dist/**", "coverage/**", "node_modules/**", "pnpm-lock.yaml", "bun.lock", "deno.lock"],
+  ignorePatterns: [
+    "dist/**",
+    "coverage/**",
+    "node_modules/**",
+    "pnpm-lock.yaml",
+    "bun.lock",
+    "deno.lock",
+  ],
 });

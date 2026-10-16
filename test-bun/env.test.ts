@@ -1,4 +1,5 @@
 import { expect, test } from "bun:test";
+
 import { getTerminalEnvironment } from "../src/env.ts";
 
 test("should detect Bun runtime", () => {

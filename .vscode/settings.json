@@ -1,7 +1,3 @@
 {
-  "deno.enablePaths": [
-    "./test-deno",
-    "./deno.json",
-    "./deno.lock"
-  ]
+  "deno.enablePaths": ["./test-deno", "./deno.json", "./deno.lock"]
 }

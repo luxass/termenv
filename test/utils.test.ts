@@ -1,5 +1,6 @@
-import type { WindowSize, WindowSizeOptions } from "../src/utils";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
+import type { WindowSize, WindowSizeOptions } from "../src/utils";
 import {
   ERASE_LINE,
   ERASE_LINE_LEFT,
@@ -35,7 +36,8 @@ describe("utils", () => {
   });
 
   describe("strip", () => {
-    const consumptionCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()_+1234567890-=[]{};':\"./>?,<\\|";
+    const consumptionCharacters =
+      "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()_+1234567890-=[]{};':\"./>?,<\\|";
 
     it("should strip ANSI escape codes from text", () => {
       const coloredText = "\u001B[31mHello, World!\u001B[0m";

@@ -2,47 +2,43 @@
   "name": "termenv",
   "version": "1.0.4",
   "description": "Terminal Environment Utilities",
-  "type": "module",
+  "keywords": [
+    "ansi",
+    "cli",
+    "color",
+    "color-support",
+    "detection",
+    "environment",
+    "hyperlinks",
+    "terminal",
+    "truecolor",
+    "tty",
+    "unicode"
+  ],
+  "homepage": "https://github.com/luxass/termenv",
+  "bugs": {
+    "url": "https://github.com/luxass/termenv/issues"
+  },
+  "license": "MIT",
   "author": {
     "name": "Lucas Nørgård",
     "email": "lucasnrgaard@gmail.com",
     "url": "https://luxass.dev"
   },
-  "packageManager": "pnpm@12.11.2",
-  "license": "MIT",
-  "homepage": "https://github.com/luxass/termenv",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/luxass/termenv.git"
   },
-  "bugs": {
-    "url": "https://github.com/luxass/termenv/issues"
-  },
-  "keywords": [
-    "terminal",
-    "environment",
-    "detection",
-    "color",
-    "ansi",
-    "tty",
-    "cli",
-    "color-support",
-    "truecolor",
-    "hyperlinks",
-    "unicode"
+  "files": [
+    "dist"
   ],
+  "type": "module",
+  "types": "./dist/index.d.mts",
   "exports": {
     ".": "./dist/index.mjs",
     "./supports": "./dist/supports.mjs",
     "./utils": "./dist/utils.mjs",
     "./package.json": "./package.json"
-  },
-  "types": "./dist/index.d.mts",
-  "files": [
-    "dist"
-  ],
-  "engines": {
-    "node": ">=24.11.0"
   },
   "scripts": {
     "build": "tsdown",
@@ -71,5 +67,9 @@
     "tsdown": "catalog:dev",
     "typescript": "catalog:dev",
     "vitest": "catalog:testing"
-  }
+  },
+  "engines": {
+    "node": ">=24.11.0"
+  },
+  "packageManager": "pnpm@12.11.2"
 }

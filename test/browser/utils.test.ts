@@ -1,11 +1,8 @@
 /// <reference types="@vitest/browser-playwright" />
 
 import { describe, expect, it } from "vitest";
-import {
-  getWindowSize,
-  isUnicodeSupported,
-  strip,
-} from "../../src/utils";
+
+import { getWindowSize, isUnicodeSupported, strip } from "../../src/utils";
 
 describe("utils browser integration", () => {
   describe("strip function in browser", () => {
@@ -20,8 +17,10 @@ describe("utils browser integration", () => {
     });
 
     it("should efficiently process large text in browser", () => {
-      const largeText = Array.from({ length: 1000 }, (_, i) =>
-        `\u001B[32mLine ${i + 1}:\u001B[0m Content\n`).join("");
+      const largeText = Array.from(
+        { length: 1000 },
+        (_, i) => `\u001B[32mLine ${i + 1}:\u001B[0m Content\n`,
+      ).join("");
 
       const start = performance.now();
       const result = strip(largeText);
@@ -96,7 +95,8 @@ describe("utils browser integration", () => {
   describe("browser-specific scenarios", () => {
     it("should work in web terminal emulator context", () => {
       // Simulate stripping ANSI from terminal output in browser
-      const terminalOutput = "\u001B[32m$ npm test\u001B[0m\n\u001B[33mRunning tests...\u001B[0m\n\u001B[32m✓ All tests passed\u001B[0m";
+      const terminalOutput =
+        "\u001B[32m$ npm test\u001B[0m\n\u001B[33mRunning tests...\u001B[0m\n\u001B[32m✓ All tests passed\u001B[0m";
       const clean = strip(terminalOutput);
 
       expect(clean).toBe("$ npm test\nRunning tests...\n✓ All tests passed");

@@ -12,24 +12,16 @@
     }
   },
   "test": {
-    "include": [
-      "test-deno/**/*.test.ts"
-    ],
-    "exclude": [
-      "node_modules"
-    ]
+    "include": ["test-deno/**/*.test.ts"],
+    "exclude": ["node_modules"]
   },
   "compilerOptions": {
-    "lib": [
-      "ES2022"
-    ],
+    "lib": ["ES2022"],
     "strict": true,
     "noUncheckedIndexedAccess": true,
     "verbatimModuleSyntax": true
   },
-  "unstable": [
-    "sloppy-imports"
-  ],
+  "unstable": ["sloppy-imports"],
   "imports": {
     "@std/expect": "jsr:@std/expect@^1.0.4",
     "@std/assert": "jsr:@std/assert@^1.0.4",
