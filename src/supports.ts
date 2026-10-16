@@ -62,9 +62,9 @@ export function getColorSpace<TGlobal = typeof globalThis>(mockGlobal?: TGlobal)
   const forceColorValue = environment.env[FORCE_COLOR];
   const forceColor = FORCE_MAP[forceColorValue!] ?? NO_COLOR;
 
-  const isForceEnabled
-    = (FORCE_COLOR in environment.env && forceColor)
-      || hasFlag(environment.argv, /^-{1,2}color=?(?:true|always)?$/);
+  const isForceEnabled =
+    (FORCE_COLOR in environment.env && forceColor) ||
+    hasFlag(environment.argv, /^-{1,2}color=?(?:true|always)?$/);
 
   if (isForceEnabled) {
     colorSpace = forceColor;
@@ -72,7 +72,11 @@ export function getColorSpace<TGlobal = typeof globalThis>(mockGlobal?: TGlobal)
 
   if (colorSpace === NO_COLOR) colorSpace = getColorSpaceByRuntime(environment);
 
-  if (!forceColor || !!environment.env.NO_COLOR || hasFlag(environment.argv, /^-{1,2}(?:no-color|color=(?:false|never))$/)) {
+  if (
+    !forceColor ||
+    !!environment.env.NO_COLOR ||
+    hasFlag(environment.argv, /^-{1,2}(?:no-color|color=(?:false|never))$/)
+  ) {
     return SPACE_MONO;
   }
 
@@ -81,9 +85,9 @@ export function getColorSpace<TGlobal = typeof globalThis>(mockGlobal?: TGlobal)
 
 const COLORTERM_MAP: Record<string, ColorSpace> = {
   "24bit": SPACE_TRUE_COLORS,
-  "truecolor": SPACE_TRUE_COLORS,
-  "ansi256": SPACE_256_COLORS,
-  "ansi": SPACE_16_COLORS,
+  truecolor: SPACE_TRUE_COLORS,
+  ansi256: SPACE_256_COLORS,
+  ansi: SPACE_16_COLORS,
 };
 
 export function getColorSpaceByRuntime(environment: TerminalEnvironmentConfig): ColorSpace {
@@ -116,10 +120,7 @@ export function getColorSpaceByRuntime(environment: TerminalEnvironmentConfig): 
   return SPACE_16_COLORS;
 }
 
-const TRUE_COLOR_CIS = [
-  "GITHUB_ACTIONS",
-  "GITEA_ACTIONS",
-];
+const TRUE_COLOR_CIS = ["GITHUB_ACTIONS", "GITEA_ACTIONS"];
 
 /**
  * Determines the color space support level for Continuous Integration (CI) environments.

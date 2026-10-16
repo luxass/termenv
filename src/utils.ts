@@ -165,7 +165,9 @@ export interface WindowSizeOptions<TGlobal = typeof globalThis> {
  * 2. Falls back to provided `width` and `height` options
  * 3. Defaults to 0 if neither are available
  */
-export function getWindowSize<TGlobal = typeof globalThis>(options?: WindowSizeOptions<TGlobal>): WindowSize {
+export function getWindowSize<TGlobal = typeof globalThis>(
+  options?: WindowSizeOptions<TGlobal>,
+): WindowSize {
   const mockGlobal = options?.mockGlobal || globalThis;
 
   // eslint-disable-next-line node/prefer-global/process
@@ -226,11 +228,13 @@ export function isUnicodeSupported<TGlobal = typeof globalThis>(mockGlobal?: TGl
   const environment = getTerminalEnvironment(mockGlobal);
 
   if (environment.platform === "win32") {
-    return Boolean(environment.env.CI)
-      || Boolean(environment.env.WT_SESSION)
-      || environment.env.TERM_PROGRAM === "vscode"
-      || environment.env.TERM === "xterm-256color"
-      || environment.env.TERM === "alacritty";
+    return (
+      Boolean(environment.env.CI) ||
+      Boolean(environment.env.WT_SESSION) ||
+      environment.env.TERM_PROGRAM === "vscode" ||
+      environment.env.TERM === "xterm-256color" ||
+      environment.env.TERM === "alacritty"
+    );
   }
 
   if (!environment.isTTY) {
@@ -245,7 +249,18 @@ export function isUnicodeSupported<TGlobal = typeof globalThis>(mockGlobal?: TGl
     return true;
   }
 
-  if (environment.env.TERM && ["xterm", "xterm-256color", "xterm-color", "screen", "screen-256color", "tmux", "tmux-256color"].includes(environment.env.TERM)) {
+  if (
+    environment.env.TERM &&
+    [
+      "xterm",
+      "xterm-256color",
+      "xterm-color",
+      "screen",
+      "screen-256color",
+      "tmux",
+      "tmux-256color",
+    ].includes(environment.env.TERM)
+  ) {
     return true;
   }
 

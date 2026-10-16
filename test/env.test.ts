@@ -1,4 +1,5 @@
 import { expect, it } from "vitest";
+
 import { getTerminalEnvironment } from "../src/env";
 
 it("should return correct config for Node.js environment", () => {

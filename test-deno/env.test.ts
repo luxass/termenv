@@ -2,6 +2,7 @@
 
 import { assertEquals } from "@std/assert";
 import { stub } from "@std/testing/mock";
+
 import { getTerminalEnvironment } from "../src/env.ts";
 
 Deno.test("should detect Deno runtime", () => {

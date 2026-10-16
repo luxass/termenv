@@ -4,16 +4,12 @@
     "incremental": true,
     "tsBuildInfoFile": "node_modules/.cache/tsbuildinfo.json",
     "target": "ES2022",
-    "lib": [
-      "ES2022"
-    ],
+    "lib": ["ES2022", "ESNext.Disposable"],
     "useDefineForClassFields": true,
     "module": "ESNext",
     "moduleResolution": "Bundler",
     "resolveJsonModule": true,
-    "types": [
-      "node"
-    ],
+    "types": ["node"],
     "allowJs": true,
     "strict": true,
     "noUncheckedIndexedAccess": true,
@@ -24,12 +20,6 @@
     "verbatimModuleSyntax": true,
     "skipLibCheck": true
   },
-  "include": [
-    "src",
-    "test"
-  ],
-  "exclude": [
-    "node_modules",
-    "dist"
-  ]
+  "include": ["src", "test", "*.config.ts"],
+  "exclude": ["node_modules", "dist"]
 }

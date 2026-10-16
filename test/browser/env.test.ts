@@ -1,6 +1,7 @@
 /// <reference types="@vitest/browser-playwright" />
 
 import { describe, expect, it } from "vitest";
+
 import { getTerminalEnvironment } from "../../src/env";
 
 describe("env browser integration", () => {

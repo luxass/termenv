@@ -40,7 +40,9 @@ export interface TerminalEnvironmentConfig {
  * const config = getTerminalEnvironment(mockGlobal);
  * ```
  */
-export function getTerminalEnvironment<TGlobal = typeof globalThis>(mockGlobal?: TGlobal): TerminalEnvironmentConfig {
+export function getTerminalEnvironment<TGlobal = typeof globalThis>(
+  mockGlobal?: TGlobal,
+): TerminalEnvironmentConfig {
   const _global = mockGlobal || globalThis;
   const Deno = (_global as any).Deno;
   const Bun = (_global as any).Bun;
@@ -75,7 +77,7 @@ export function getTerminalEnvironment<TGlobal = typeof globalThis>(mockGlobal?:
 
   return {
     env,
-    isTTY: !!(proc.stdout?.isTTY),
+    isTTY: !!proc.stdout?.isTTY,
     argv: proc.argv || [],
     platform: proc.platform,
     runtime,
