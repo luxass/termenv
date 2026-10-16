@@ -40,7 +40,7 @@ export const SPACE_TRUE_COLORS = 3;
  * @return {boolean}
  */
 function hasFlag(argv: string[], regex: RegExp): boolean {
-  return !!argv.find((arg) => regex.test(arg));
+  return argv.some((arg) => regex.test(arg));
 }
 
 const FORCE_MAP: Record<string, ColorSpace> = {
@@ -64,7 +64,7 @@ export function getColorSpace<TGlobal = typeof globalThis>(mockGlobal?: TGlobal)
 
   const isForceEnabled =
     (FORCE_COLOR in environment.env && forceColor) ||
-    hasFlag(environment.argv, /^-{1,2}color=?(?:true|always)?$/);
+    hasFlag(environment.argv, /^-{1,2}color=?(?:true|always)?$/u);
 
   if (isForceEnabled) {
     colorSpace = forceColor;
@@ -75,7 +75,7 @@ export function getColorSpace<TGlobal = typeof globalThis>(mockGlobal?: TGlobal)
   if (
     !forceColor ||
     !!environment.env.NO_COLOR ||
-    hasFlag(environment.argv, /^-{1,2}(?:no-color|color=(?:false|never))$/)
+    hasFlag(environment.argv, /^-{1,2}(?:no-color|color=(?:false|never))$/u)
   ) {
     return SPACE_MONO;
   }
@@ -106,14 +106,14 @@ export function getColorSpaceByRuntime(environment: TerminalEnvironmentConfig): 
   if (ciColorSpace !== SPACE_MONO) return ciColorSpace;
 
   // unknown output or colors are not supported
-  if (!isTTY || /-mono|dumb/i.test(env.TERM!)) return SPACE_MONO;
+  if (!isTTY || /-mono|dumb/iu.test(env.TERM!)) return SPACE_MONO;
 
   // truecolor support starts from Windows 10 build 14931 (2016-09-21), in 2024 we assume modern Windows is used
   if (env.platform === "win32") return SPACE_TRUE_COLORS;
 
   // check for 256 colors after ENV variables such as TERM, COLORTERM, TERMINAL_EMULATOR etc.
   // terminals, that support 256 colors, e.g., native macOS terminal
-  if (/-256(?:colou?r)?$/i.test(env.TERM!)) return SPACE_256_COLORS;
+  if (/-256(?:colou?r)?$/iu.test(env.TERM!)) return SPACE_256_COLORS;
 
   // We default to 16-color support if no other conditions are met.
   // This is safe since we have already checked most of the known terminals supporting 256 colors.

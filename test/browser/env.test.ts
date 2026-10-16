@@ -23,9 +23,11 @@ describe("env browser integration", () => {
 
     it("should prioritize browser detection over Node.js indicators", () => {
       const mockHybridEnvironment = {
-        window: { chrome: true }, // Browser indicator
+        // Browser indicator
+        window: { chrome: true },
         process: {
-          versions: { node: "18.0.0" }, // Node.js indicator
+          // Node.js indicator
+          versions: { node: "18.0.0" },
           env: { NODE_ENV: "development" },
           platform: "darwin",
         },

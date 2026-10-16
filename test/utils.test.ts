@@ -21,13 +21,13 @@ describe("utils", () => {
 
   describe("constants", () => {
     it("should have correct ANSI escape codes", () => {
-      expect(RESET).toBe("\x1B[2J\x1B[0;0H");
-      expect(ERASE_SCREEN).toBe("\x1B[2J");
-      expect(ERASE_SCREEN_LEFT).toBe("\x1B[1J");
-      expect(ERASE_SCREEN_RIGHT).toBe("\x1B[J");
-      expect(ERASE_LINE).toBe("\x1B[2K");
-      expect(ERASE_LINE_LEFT).toBe("\x1B[1K");
-      expect(ERASE_LINE_RIGHT).toBe("\x1B[K");
+      expect(RESET).toBe("\u001B[2J\u001B[0;0H");
+      expect(ERASE_SCREEN).toBe("\u001B[2J");
+      expect(ERASE_SCREEN_LEFT).toBe("\u001B[1J");
+      expect(ERASE_SCREEN_RIGHT).toBe("\u001B[J");
+      expect(ERASE_LINE).toBe("\u001B[2K");
+      expect(ERASE_LINE_LEFT).toBe("\u001B[1K");
+      expect(ERASE_LINE_RIGHT).toBe("\u001B[K");
     });
 
     it("should have strip function available", () => {
