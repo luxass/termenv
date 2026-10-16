@@ -29,7 +29,7 @@ jobs:
       - name: setup node
         uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
-          node-version: lts/*
+          node-version: "24"
           cache: pnpm
 
       - name: install dependencies
@@ -49,7 +49,7 @@ jobs:
 
     strategy:
       matrix:
-        node: [ 20, lts/* ]
+        node: [24, 26]
         os:
           - ubuntu-latest
           - macos-latest
@@ -94,7 +94,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        deno-version: [ 2.2.x, 2.3.x, 2.4.x ]
+        deno-version: [2.2.x, 2.3.x, 2.4.x]
 
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -120,7 +120,7 @@ jobs:
       matrix:
         # Bun Setup doesn't work with the wildcard version atm,
         # so hardcoding them for now.
-        bun-version: [ 1.0.36, 1.1.45, 1.2.18 ]
+        bun-version: [1.0.36, 1.1.45, 1.2.18]
 
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
