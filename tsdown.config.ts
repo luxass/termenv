@@ -8,7 +8,7 @@ export default defineConfig({
   ],
   format: ["esm"],
   platform: "node",
-  target: "es2022",
+  target: "node24",
   dts: true,
   treeshake: true,
   publint: true,

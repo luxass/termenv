@@ -1,5 +1,5 @@
 import { playwright } from "@vitest/browser-playwright";
-import { defaultExclude, defineConfig } from "vitest/config";
+import { configDefaults, defineConfig } from "vitest/config";
 
 export default defineConfig({
   test: {
@@ -14,8 +14,8 @@ export default defineConfig({
           exclude: [
             "test-deno/**/*.test.ts",
             "test-bun/**/*.test.ts",
-            "test/browser/**.test.ts",
-            ...defaultExclude,
+            "test/browser/**/*.test.ts",
+            ...configDefaults.exclude,
           ],
           environment: "node",
         },
@@ -27,7 +27,7 @@ export default defineConfig({
             "test-deno/**/*.test.ts",
             "test-bun/**/*.test.ts",
             "test/*.test.ts",
-            ...defaultExclude,
+            ...configDefaults.exclude,
           ],
           include: [
             "test/browser/**/*.test.ts",

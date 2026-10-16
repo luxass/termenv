@@ -38,7 +38,10 @@
   "publish": {
     "exclude": [
       "tsdown.config.ts",
-      "eslint.config.js",
+      "oxlint.config.ts",
+      "oxfmt.config.ts",
+      "vitest.config.ts",
+      "pnpm-workspace.yaml",
       "pnpm-lock.yaml",
       ".github/**",
       "scripts/**",
