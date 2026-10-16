@@ -138,7 +138,7 @@ const TRUE_COLOR_CIS = ["GITHUB_ACTIONS", "GITEA_ACTIONS"];
  *
  * @example
  * ```ts
- * import { getTerminalEnvironment } from "termenv/env";
+ * import { getTerminalEnvironment } from "termenv";
  * import { getColorSpaceByCI } from "termenv/supports";
  *
  * const env = getTerminalEnvironment();

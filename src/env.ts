@@ -29,7 +29,7 @@ export interface TerminalEnvironmentConfig {
  *
  * @example
  * ```ts
- * import { getTerminalEnvironment } from "termenv/env";
+ * import { getTerminalEnvironment } from "termenv";
  *
  * const config = getTerminalEnvironment();
  * console.log(config.runtime); // 'node', 'deno', or 'bun'
@@ -47,7 +47,7 @@ export function getTerminalEnvironment<TGlobal = typeof globalThis>(
   const Deno = (_global as any).Deno;
   const Bun = (_global as any).Bun;
 
-  // eslint-disable-next-line node/prefer-global/process
+  // oxlint-disable-next-line typescript/no-unsafe-assignment, typescript/no-unsafe-member-access -- Runtime globals are intentionally untyped.
   const proc = (_global as any).process || {};
   let env = proc.env || {};
 

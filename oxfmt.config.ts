@@ -21,6 +21,7 @@ export default defineConfig({
     "node_modules/**",
     "pnpm-lock.yaml",
     "bun.lock",
-    "deno.lock",
+    "test-results/**",
+    "playwright-report/**",
   ],
 });

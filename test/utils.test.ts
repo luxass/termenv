@@ -165,7 +165,7 @@ describe("utils", () => {
         ...process.stdout,
         columns: 80,
         rows: 24,
-      } as any);
+      } as typeof process.stdout);
 
       const size = getWindowSize();
       expect(size).toEqual({ width: 80, height: 24 });
@@ -203,7 +203,7 @@ describe("utils", () => {
         ...process.stdout,
         columns: 120,
         rows: 40,
-      } as any);
+      } as typeof process.stdout);
 
       const options: WindowSizeOptions = { width: 80, height: 24 };
       const size = getWindowSize(options);

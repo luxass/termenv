@@ -1,5 +1,6 @@
 dist
 node_modules
 coverage
-deno.lock
 bun.lock
+test-results
+playwright-report

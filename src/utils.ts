@@ -78,11 +78,8 @@ const ANSI_PATTERNS = [
   "(?:(?:\\d{1,4}(?:;\\d{0,4})*)?[\\dA-PR-TZcf-nq-uy=><~]))",
 ];
 
-const ANSI_PATTERN = new RegExp(
-  // eslint-disable-next-line regexp/no-useless-non-capturing-group, regexp/no-trivially-nested-quantifier, regexp/no-useless-quantifier, regexp/prefer-w, regexp/no-useless-escape
-  ANSI_PATTERNS.join("|"),
-  "g",
-);
+// oxlint-disable-next-line require-unicode-regexp -- Preserve the upstream ANSI pattern's code-unit matching.
+const ANSI_PATTERN = new RegExp(ANSI_PATTERNS.join("|"), "g");
 
 /**
  * Strip Ansi Escape Codes from a string
@@ -170,7 +167,7 @@ export function getWindowSize<TGlobal = typeof globalThis>(
 ): WindowSize {
   const mockGlobal = options?.mockGlobal || globalThis;
 
-  // eslint-disable-next-line node/prefer-global/process
+  // oxlint-disable-next-line typescript/no-unsafe-assignment, typescript/no-unsafe-member-access -- Runtime globals are intentionally untyped.
   const proc = (mockGlobal as any).process || {};
 
   return {
