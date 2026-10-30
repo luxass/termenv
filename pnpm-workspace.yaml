@@ -8,20 +8,20 @@ shellEmulator: true
 
 catalogs:
   dev:
-    oxfmt: 0.72.0
+    oxfmt: 0.74.0
     oxlint: 1.87.0
-    oxlint-tsgolint: 7.0.2004
+    oxlint-tsgolint: 7.0.2005
     publint: 0.3.25
-    tsdown: 0.23.1
+    tsdown: 0.23.2
     typescript: 7.0.2
 
   testing:
     "@vitest/browser": 5.0.3
     "@vitest/browser-playwright": 5.0.3
     "@vitest/coverage-v8": 5.0.3
-    playwright: 1.64.0
+    playwright: 1.64.1
     vitest: 5.0.3
 
   types:
-    "@types/bun": 1.4.2
+    "@types/bun": 1.4.4
     "@types/node": 26.6.5
