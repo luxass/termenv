@@ -15,42 +15,17 @@ concurrency:
   cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - name: checkout
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-
-      - name: setup pnpm
-        uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
-
-      - name: setup node
-        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
-        with:
-          node-version: "24"
-          cache: pnpm
-
-      - name: install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: build
-        run: pnpm build
-
-      - name: lint
-        run: pnpm lint
-
-      - name: typecheck
-        run: pnpm typecheck
-
-      - name: check formatting
-        run: pnpm fmt:check
+  ci:
+    uses: luxass/shared-workflows/.github/workflows/reusable-ci.yaml@9770f7268daf358179c45895de8becc2e8525984 # v0.14.0
+    permissions:
+      contents: read
+    with:
+      node-version: "24"
+      fmt: true
+      fmt-script: "fmt:check"
 
   test:
-    timeout-minutes: 20
-    runs-on: ${{ matrix.os }}
-
+    name: "test (os: ${{ matrix.os }}, node: ${{ matrix.node }})"
     strategy:
       matrix:
         node: [24, 26]
@@ -62,41 +37,30 @@ jobs:
           - macos-latest
           - windows-latest
       fail-fast: false
+    uses: luxass/shared-workflows/.github/workflows/reusable-test.yaml@9770f7268daf358179c45895de8becc2e8525984 # v0.14.0
+    permissions:
+      contents: read
+    with:
+      runs-on: ${{ matrix.os }}
+      node-version: ${{ matrix.node }}
+      pre-test-script: "build"
+      test-script: "test --project unit"
 
-    steps:
-      - name: checkout
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-
-      - name: setup pnpm
-        uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
-
-      - name: setup node v${{ matrix.node }}
-        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
-        with:
-          node-version: ${{ matrix.node }}
-          cache: pnpm
-
-      - name: install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: build
-        run: pnpm build
-
-      - name: test (unit)
-        run: pnpm test --project unit
-
-      - name: install chromium through playwright
-        if: matrix.os == 'ubuntu-latest'
-        timeout-minutes: 5
-        env:
-          PLAYWRIGHT_DOWNLOAD_CONNECTION_TIMEOUT: "60000"
-        run: pnpm exec playwright install chromium
-
-      - name: test (browser)
-        if: matrix.os == 'ubuntu-latest'
-        run: xvfb-run pnpm test --project browser
+  test-browser:
+    # Browser tests run headed (window.chrome is missing in headless mode),
+    # so they need a virtual display from xvfb-run on the ubuntu runner.
+    name: "test-browser (node: ${{ matrix.node }})"
+    strategy:
+      matrix:
+        node: [24, 26, "24.11.0"]
+      fail-fast: false
+    uses: luxass/shared-workflows/.github/workflows/reusable-test.yaml@9770f7268daf358179c45895de8becc2e8525984 # v0.14.0
+    permissions:
+      contents: read
+    with:
+      node-version: ${{ matrix.node }}
+      pre-test-script: "exec playwright install chromium"
+      test-script: "exec xvfb-run pnpm test --project browser"
 
   bun:
     name: test-bun (${{ matrix.bun-version }})
