@@ -23,5 +23,5 @@ catalogs:
     vitest: 5.1.0
 
   types:
-    "@types/bun": 1.4.2
+    "@types/bun": 1.4.4
     "@types/node": 26.6.5
