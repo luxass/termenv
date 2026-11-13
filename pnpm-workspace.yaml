@@ -10,16 +10,16 @@ catalogs:
   dev:
     oxfmt: 0.76.0
     oxlint: 1.90.0
-    oxlint-tsgolint: 7.0.2005
+    oxlint-tsgolint: 7.0.2006
     publint: 0.3.25
-    tsdown: 0.23.4
+    tsdown: 0.23.7
     typescript: 7.0.2
 
   testing:
     "@vitest/browser": 5.1.0
     "@vitest/browser-playwright": 5.1.0
     "@vitest/coverage-v8": 5.1.0
-    playwright: 1.64.1
+    playwright: 1.65.0
     vitest: 5.1.0
 
   types:
