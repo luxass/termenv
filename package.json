@@ -58,6 +58,7 @@
     "@vitest/browser": "catalog:testing",
     "@vitest/browser-playwright": "catalog:testing",
     "@vitest/coverage-v8": "catalog:testing",
+    "@xterm/headless": "catalog:testing",
     "oxfmt": "catalog:dev",
     "oxlint": "catalog:dev",
     "oxlint-tsgolint": "catalog:dev",

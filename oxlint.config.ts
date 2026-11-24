@@ -43,6 +43,13 @@ export default defineConfig({
       },
     },
     {
+      // xterm.js has no public API for cursor visibility or OSC 8 link URLs, so the screen helper reads these.
+      files: ["test/terminal-screen.ts"],
+      rules: {
+        "no-underscore-dangle": ["error", { allow: ["_core", "_oscLinkService"] }],
+      },
+    },
+    {
       // Runtime detection intentionally probes untyped globals across runtimes.
       files: ["src/env.ts", "src/utils.ts", "test/browser/env.test.ts"],
       rules: {
