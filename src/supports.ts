@@ -23,6 +23,7 @@
 
 import type { TerminalEnvironmentConfig } from "./env";
 import { getTerminalEnvironment } from "./env";
+import { hasValue } from "./runtime-global";
 
 export type ColorSpace = -1 | 0 | 1 | 2 | 3;
 
@@ -62,8 +63,9 @@ export function getColorSpace<TGlobal = typeof globalThis>(mockGlobal?: TGlobal)
   const forceColorValue = environment.env[FORCE_COLOR];
   const forceColor = FORCE_MAP[forceColorValue!] ?? NO_COLOR;
 
+  const isForceDisabled = forceColor === SPACE_MONO;
   const isForceEnabled =
-    (FORCE_COLOR in environment.env && forceColor) ||
+    (FORCE_COLOR in environment.env && !isForceDisabled) ||
     hasFlag(environment.argv, /^-{1,2}color=?(?:true|always)?$/u);
 
   if (isForceEnabled) {
@@ -73,14 +75,14 @@ export function getColorSpace<TGlobal = typeof globalThis>(mockGlobal?: TGlobal)
   if (colorSpace === NO_COLOR) colorSpace = getColorSpaceByRuntime(environment);
 
   if (
-    !forceColor ||
-    !!environment.env.NO_COLOR ||
+    isForceDisabled ||
+    hasValue(environment.env.NO_COLOR) ||
     hasFlag(environment.argv, /^-{1,2}(?:no-color|color=(?:false|never))$/u)
   ) {
     return SPACE_MONO;
   }
 
-  if (isForceEnabled && !colorSpace) {
+  if (isForceEnabled && colorSpace === SPACE_MONO) {
     // Forced colors don't need a TTY, so use the COLORTERM level when the terminal reports one.
     return COLORTERM_MAP[environment.env.COLORTERM!] ?? SPACE_TRUE_COLORS;
   }
@@ -163,16 +165,16 @@ const TRUE_COLOR_CIS = ["GITHUB_ACTIONS", "GITEA_ACTIONS"];
 export function getColorSpaceByCI(environment: TerminalEnvironmentConfig): ColorSpace {
   // https://youtrack.jetbrains.com/issue/TW-62063/Expand-ANSI-coloring-support-to-include-256-color-set
   // JetBrains TeamCity support 256 colors since 2020.1.1 (2020-06-23)
-  if (environment.env.TEAMCITY_VERSION) return SPACE_256_COLORS;
+  if (hasValue(environment.env.TEAMCITY_VERSION)) return SPACE_256_COLORS;
 
   // Azure DevOps CI
   // Azure DevOps doesn't set "CI" variable, but it sets "TF_BUILD" variable
   // https://learn.microsoft.com/en-us/azure/devops/pipelines/build/variables?view=azure-devops&tabs=yaml
-  if (environment.env.TF_BUILD) return SPACE_16_COLORS;
+  if (hasValue(environment.env.TF_BUILD)) return SPACE_16_COLORS;
 
   // CI tools
   // https://github.com/watson/ci-info/blob/master/vendors.json
-  if (environment.env.CI) {
+  if (hasValue(environment.env.CI)) {
     if (TRUE_COLOR_CIS.some((ci) => environment.env[ci] != null)) {
       return SPACE_TRUE_COLORS;
     }

@@ -1,3 +1,5 @@
+import { hasValue, resolveRuntimeGlobal } from "./runtime-global";
+
 /**
  * Configuration interface for environment runtime information.
  */
@@ -43,15 +45,13 @@ export interface TerminalEnvironmentConfig {
 export function getTerminalEnvironment<TGlobal = typeof globalThis>(
   mockGlobal?: TGlobal,
 ): TerminalEnvironmentConfig {
-  const _global = mockGlobal || globalThis;
-  const Deno = (_global as any).Deno;
-  const Bun = (_global as any).Bun;
+  const runtimeGlobal = resolveRuntimeGlobal(mockGlobal);
+  const { Deno, Bun } = runtimeGlobal;
 
-  // oxlint-disable-next-line typescript/no-unsafe-assignment, typescript/no-unsafe-member-access -- Runtime globals are intentionally untyped.
-  const proc = (_global as any).process || {};
-  let env = proc.env || {};
+  const proc = runtimeGlobal.process ?? {};
+  let env = proc.env ?? {};
 
-  if (Deno) {
+  if (Deno != null) {
     try {
       // a read on the env will trigger a Deno permission error if not allowed
       Object.keys(env);
@@ -62,8 +62,8 @@ export function getTerminalEnvironment<TGlobal = typeof globalThis>(
 
   const isDeno = Deno != null;
   const isBun = Bun != null;
-  const isNode = !isDeno && !isBun && typeof proc === "object" && proc?.versions?.node;
-  const isBrowser = !!(_global as any).window?.chrome;
+  const isNode = !isDeno && !isBun && typeof proc === "object" && hasValue(proc.versions?.node);
+  const isBrowser = Boolean(runtimeGlobal.window?.chrome);
 
   const runtime = isDeno
     ? "deno"
@@ -77,8 +77,8 @@ export function getTerminalEnvironment<TGlobal = typeof globalThis>(
 
   return {
     env,
-    isTTY: !!proc.stdout?.isTTY,
-    argv: proc.argv || [],
+    isTTY: Boolean(proc.stdout?.isTTY),
+    argv: proc.argv ?? [],
     platform: proc.platform,
     runtime,
   };
