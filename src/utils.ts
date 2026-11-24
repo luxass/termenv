@@ -35,6 +35,11 @@
  */
 
 import { getTerminalEnvironment } from "./env";
+import { resolveRuntimeGlobal } from "./runtime-global";
+
+export * from "./osc";
+export * from "./query";
+export * from "./sequences";
 
 /**
  * The ANSI escape code for resetting all attributes.
@@ -87,7 +92,7 @@ const ANSI_PATTERN = new RegExp(ANSI_PATTERNS.join("|"), "g");
  * @returns {string} The stripped text without ansi escape codes
  */
 export function strip(text: string): string {
-  return text.replace(ANSI_PATTERN, "");
+  return text.replaceAll(ANSI_PATTERN, "");
 }
 
 /**
@@ -165,15 +170,22 @@ export interface WindowSizeOptions<TGlobal = typeof globalThis> {
 export function getWindowSize<TGlobal = typeof globalThis>(
   options?: WindowSizeOptions<TGlobal>,
 ): WindowSize {
-  const mockGlobal = options?.mockGlobal || globalThis;
-
-  // oxlint-disable-next-line typescript/no-unsafe-assignment, typescript/no-unsafe-member-access -- Runtime globals are intentionally untyped.
-  const proc = (mockGlobal as any).process || {};
+  const proc = resolveRuntimeGlobal(options?.mockGlobal).process ?? {};
 
   return {
-    width: proc.stdout?.columns || options?.width || 0,
-    height: proc.stdout?.rows || options?.height || 0,
+    width: knownSize(proc.stdout?.columns) ?? knownSize(options?.width) ?? 0,
+    height: knownSize(proc.stdout?.rows) ?? knownSize(options?.height) ?? 0,
   };
+}
+
+/**
+ * Returns the size when it is known, and `undefined` otherwise.
+ *
+ * A size of `0` or `NaN` means unknown. For example, a pseudo-terminal that never received a size reports 0 columns.
+ */
+function knownSize(size: number | undefined): number | undefined {
+  if (size === undefined || size === 0 || Number.isNaN(size)) return undefined;
+  return size;
 }
 
 /**
@@ -247,7 +259,7 @@ export function isUnicodeSupported<TGlobal = typeof globalThis>(mockGlobal?: TGl
   }
 
   if (
-    environment.env.TERM &&
+    environment.env.TERM !== undefined &&
     [
       "xterm",
       "xterm-256color",
@@ -261,5 +273,5 @@ export function isUnicodeSupported<TGlobal = typeof globalThis>(mockGlobal?: TGl
     return true;
   }
 
-  return Boolean(environment.env.LANG && environment.env.LANG.includes("UTF-8"));
+  return environment.env.LANG?.includes("UTF-8") === true;
 }

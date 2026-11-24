@@ -72,6 +72,88 @@ console.log(isUnicodeSupported()); // => true | false
 console.log(getWindowSize()); // => { width: 80, height: 24 }
 ```
 
+### Cursor, screen, and input sequences
+
+These builders return strings and write nothing, so you choose the output stream.
+Counts must be non-negative integers. A count of `0` returns an empty string, because terminals treat `0` as `1`.
+
+```ts
+import {
+  ALT_SCREEN,
+  clearLines,
+  cursorUp,
+  ENABLE_BRACKETED_PASTE,
+  ENABLE_MOUSE_CELL_MOTION,
+  ENABLE_MOUSE_EXTENDED_MODE,
+  EXIT_ALT_SCREEN,
+  HIDE_CURSOR,
+  moveCursor,
+  SHOW_CURSOR,
+} from "termenv/utils";
+
+// full-screen program
+process.stdout.write(ALT_SCREEN + HIDE_CURSOR + moveCursor(1, 1));
+process.stdout.write(
+  ENABLE_MOUSE_CELL_MOTION + ENABLE_MOUSE_EXTENDED_MODE + ENABLE_BRACKETED_PASTE,
+);
+// ...
+process.stdout.write(SHOW_CURSOR + EXIT_ALT_SCREEN);
+
+// redraw a 3-line progress display
+process.stdout.write(clearLines(2) + render());
+process.stdout.write(cursorUp(2));
+```
+
+Also available: `cursorDown`, `cursorForward`, `cursorBack`, `cursorNextLine`, `cursorPrevLine`,
+`SAVE_CURSOR_POSITION`, `RESTORE_CURSOR_POSITION`, `insertLines`, `deleteLines`, `changeScrollingRegion`,
+`SAVE_SCREEN`, `RESTORE_SCREEN`, the other `ENABLE_MOUSE_*` / `DISABLE_MOUSE_*` modes,
+`DISABLE_BRACKETED_PASTE`, `BRACKETED_PASTE_START`, and `BRACKETED_PASTE_END`.
+
+### Hyperlinks, notifications, clipboard, and window title
+
+These builders reject control characters in URLs, titles, and colors, so a value can't end the sequence or inject another one.
+
+```ts
+import {
+  copyToClipboard,
+  hyperlink,
+  notify,
+  RESET_BACKGROUND_COLOR,
+  setBackgroundColor,
+  setWindowTitle,
+} from "termenv/utils";
+
+console.log(hyperlink("https://github.com/luxass/termenv", "termenv")); // OSC 8
+process.stdout.write(notify("Build finished", "0 errors")); // OSC 777
+process.stdout.write(copyToClipboard("npm install termenv")); // OSC 52, works over SSH
+process.stdout.write(copyToClipboard("text", { primary: true })); // X11 primary selection
+process.stdout.write(setWindowTitle("my app")); // OSC 2
+process.stdout.write(setBackgroundColor("#1e1e2e")); // OSC 11
+process.stdout.write(RESET_BACKGROUND_COLOR); // OSC 111
+```
+
+`copyToClipboard` wraps the sequence for GNU screen. Also available: `setForegroundColor`, `setCursorColor`,
+`RESET_FOREGROUND_COLOR`, and `RESET_CURSOR_COLOR`.
+
+### Terminal colors
+
+Ask the terminal for its default colors (OSC 10 and OSC 11), for example to pick readable colors for a light or dark theme.
+
+```ts
+import { hasDarkBackground, queryBackgroundColor, queryForegroundColor } from "termenv/utils";
+
+console.log(await queryBackgroundColor()); // => { red: 36, green: 39, blue: 58 } | undefined
+console.log(await queryForegroundColor()); // => { red: 202, green: 211, blue: 245 } | undefined
+console.log(await hasDarkBackground()); // => true | false
+```
+
+- Queries need an interactive terminal: stdin and stdout must be TTYs. Otherwise they resolve at once without a terminal answer.
+- Terminals that don't support the query are detected at once. The `timeout` option (default 1000 ms) applies only when nothing answers.
+- When the terminal doesn't answer, the queries read `COLORFGBG`. They resolve to `undefined` when neither gives a color, and `hasDarkBackground()` then resolves to `true`.
+- GNU screen, tmux, and `TERM=dumb` aren't queried, because a multiplexer can be attached to several terminals.
+- Query before your program reads stdin. Input typed during the query is consumed, and stdin is paused again afterwards so your process can exit.
+- Don't query from a background job (`node app.js &`). Reading the terminal there stops the process.
+
 ## 📄 License
 
 Published under [MIT License](./LICENSE).

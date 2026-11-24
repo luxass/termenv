@@ -148,7 +148,7 @@ describe("env browser integration", () => {
     });
 
     it("should handle circular references in global object", () => {
-      const mockCircular: any = {
+      const mockCircular: { window: { chrome: boolean; self?: unknown } } = {
         window: { chrome: true },
       };
       mockCircular.window.self = mockCircular.window;
