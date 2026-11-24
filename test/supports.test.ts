@@ -81,6 +81,60 @@ describe("flags & options", () => {
   });
 });
 
+function detectOnTTY(env: Record<string, string>, platform = "linux"): number {
+  return getColorSpace({
+    process: {
+      platform,
+      env,
+      argv: [],
+      stdout: { isTTY: true },
+    },
+  });
+}
+
+describe("terminal environment variables", () => {
+  it("keeps truecolor for tmux, which uses TERM=screen*", () => {
+    expect(
+      detectOnTTY({ TERM: "screen-256color", COLORTERM: "truecolor", TERM_PROGRAM: "tmux" }),
+    ).toBe(SPACE_TRUE_COLORS);
+  });
+
+  it("detects Google Cloud Shell as truecolor", () => {
+    expect(detectOnTTY({ TERM: "xterm", GOOGLE_CLOUD_SHELL: "true" })).toBe(SPACE_TRUE_COLORS);
+  });
+
+  it("detects Windows terminals as truecolor", () => {
+    expect(detectOnTTY({ TERM: "xterm" }, "win32")).toBe(SPACE_TRUE_COLORS);
+  });
+
+  it("ignores FORCE_COLOR values that match Object.prototype keys", () => {
+    expect(detectOnTTY({ TERM: "xterm-256color", FORCE_COLOR: "constructor" })).toBe(
+      SPACE_256_COLORS,
+    );
+  });
+});
+
+// CLICOLOR and CLICOLOR_FORCE (https://bixense.com/clicolors/) are deprecated in favor of
+// FORCE_COLOR and NO_COLOR, so termenv doesn't read them.
+describe("deprecated CLICOLOR variables", () => {
+  it("ignores CLICOLOR=0", () => {
+    expect(detectOnTTY({ TERM: "xterm-256color", CLICOLOR: "0" })).toBe(SPACE_256_COLORS);
+  });
+
+  it("ignores CLICOLOR_FORCE without a TTY", () => {
+    const colorSpace = getColorSpace({
+      process: {
+        platform: "linux",
+        env: { TERM: "xterm-256color", CLICOLOR_FORCE: "1" },
+        argv: [],
+        stdout: { isTTY: false },
+      },
+    });
+
+    expect(colorSpace).toBe(SPACE_MONO);
+  });
+});
+
 describe("COLORTERM", () => {
   it.each([
     ["a TTY", { COLORTERM: "truecolor" }, true, SPACE_TRUE_COLORS],
@@ -127,7 +181,8 @@ describe("COLORTERM", () => {
 it("use 16-color for non-detectable terminals", () => {
   const colorSpace = getColorSpace({
     process: {
-      platform: process.platform,
+      // Windows terminals are detected as truecolor, so test another platform.
+      platform: "linux",
       env: {
         TERM: "thisisnotarealterminal",
       },
@@ -154,7 +209,18 @@ describe("detect color space in terminals", () => {
     ["vt320-w", SPACE_16_COLORS, undefined],
     ["vt52", SPACE_16_COLORS, undefined],
     ["vt525", SPACE_16_COLORS, undefined],
-  ])("should return term %s with space %s", (term, expected, colorTerm) => {
+    ["alacritty", SPACE_TRUE_COLORS, undefined],
+    ["contour", SPACE_TRUE_COLORS, undefined],
+    ["rio", SPACE_TRUE_COLORS, undefined],
+    ["wezterm", SPACE_TRUE_COLORS, undefined],
+    ["xterm-ghostty", SPACE_TRUE_COLORS, undefined],
+    ["xterm-kitty", SPACE_TRUE_COLORS, undefined],
+    ["xterm", SPACE_256_COLORS, "yes"],
+    ["xterm", SPACE_256_COLORS, "true"],
+    ["xterm-256color", SPACE_TRUE_COLORS, "TrueColor"],
+    ["screen-256color", SPACE_256_COLORS, "truecolor"],
+    ["xterm", SPACE_16_COLORS, "constructor"],
+  ])("should return term %s with space %s (COLORTERM=%s)", (term, expected, colorTerm) => {
     // windows supports true colors in 2024, so all of these `TERM` values
     // are returned as space 3 (true colors) when on windows.
     const platform = process.platform === "win32" ? "linux" : process.platform;
