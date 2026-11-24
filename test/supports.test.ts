@@ -81,6 +81,49 @@ describe("flags & options", () => {
   });
 });
 
+describe("COLORTERM", () => {
+  it.each([
+    ["a TTY", { COLORTERM: "truecolor" }, true, SPACE_TRUE_COLORS],
+    ["a TTY with ansi256", { COLORTERM: "ansi256" }, true, SPACE_256_COLORS],
+    ["a pipe or a file", { COLORTERM: "truecolor" }, false, SPACE_MONO],
+    ["a dumb terminal", { COLORTERM: "truecolor", TERM: "dumb" }, true, SPACE_MONO],
+    ["a mono terminal", { COLORTERM: "truecolor", TERM: "xterm-mono" }, true, SPACE_MONO],
+    ["CI without a TTY", { COLORTERM: "ansi256", CI: "1" }, false, SPACE_256_COLORS],
+    [
+      "forced colors without a TTY",
+      { COLORTERM: "ansi256", FORCE_COLOR: "true" },
+      false,
+      SPACE_256_COLORS,
+    ],
+  ])("sets the level only when the output can show colors: %s", (_name, env, isTTY, expected) => {
+    const platform = process.platform === "win32" ? "linux" : process.platform;
+    const colorSpace = getColorSpace({
+      process: {
+        platform,
+        env,
+        argv: [],
+        stdout: { isTTY },
+        stderr: { isTTY },
+      },
+    });
+
+    expect(colorSpace).toBe(expected);
+  });
+
+  it("uses the COLORTERM level with the --color flag without a TTY", () => {
+    const colorSpace = getColorSpace({
+      process: {
+        platform: process.platform,
+        env: { COLORTERM: "ansi" },
+        argv: ["--color"],
+        stdout: { isTTY: false },
+      },
+    });
+
+    expect(colorSpace).toBe(SPACE_16_COLORS);
+  });
+});
+
 it("use 16-color for non-detectable terminals", () => {
   const colorSpace = getColorSpace({
     process: {

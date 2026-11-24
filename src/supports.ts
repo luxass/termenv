@@ -80,7 +80,12 @@ export function getColorSpace<TGlobal = typeof globalThis>(mockGlobal?: TGlobal)
     return SPACE_MONO;
   }
 
-  return isForceEnabled && !colorSpace ? SPACE_TRUE_COLORS : colorSpace;
+  if (isForceEnabled && !colorSpace) {
+    // Forced colors don't need a TTY, so use the COLORTERM level when the terminal reports one.
+    return COLORTERM_MAP[environment.env.COLORTERM!] ?? SPACE_TRUE_COLORS;
+  }
+
+  return colorSpace;
 }
 
 const COLORTERM_MAP: Record<string, ColorSpace> = {
@@ -93,20 +98,22 @@ const COLORTERM_MAP: Record<string, ColorSpace> = {
 export function getColorSpaceByRuntime(environment: TerminalEnvironmentConfig): ColorSpace {
   const { env, isTTY, runtime } = environment;
 
-  const level = COLORTERM_MAP[env.COLORTERM!];
-  // If COLORTERM is set, we use it to determine the color space.
-  if (level) return level;
+  // COLORTERM sets the color level. It doesn't say whether the output can show colors.
+  // Terminals export it to every child process, so it is also set when output goes to a pipe or a file.
+  const colorTermSpace = COLORTERM_MAP[env.COLORTERM!];
 
   if (runtime === "browser") {
     // In a browser environment, we assume true color support.
-    return SPACE_TRUE_COLORS;
+    return colorTermSpace ?? SPACE_TRUE_COLORS;
   }
 
   const ciColorSpace = getColorSpaceByCI(environment);
-  if (ciColorSpace !== SPACE_MONO) return ciColorSpace;
+  if (ciColorSpace !== SPACE_MONO) return colorTermSpace ?? ciColorSpace;
 
   // unknown output or colors are not supported
   if (!isTTY || /-mono|dumb/iu.test(env.TERM!)) return SPACE_MONO;
+
+  if (colorTermSpace !== undefined) return colorTermSpace;
 
   // truecolor support starts from Windows 10 build 14931 (2016-09-21), in 2024 we assume modern Windows is used
   if (env.platform === "win32") return SPACE_TRUE_COLORS;
