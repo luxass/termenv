@@ -44,13 +44,14 @@ function hasFlag(argv: string[], regex: RegExp): boolean {
   return argv.some((arg) => regex.test(arg));
 }
 
-const FORCE_MAP: Record<string, ColorSpace> = {
-  false: SPACE_MONO,
-  0: SPACE_MONO,
-  1: SPACE_16_COLORS,
-  2: SPACE_256_COLORS,
-  3: SPACE_TRUE_COLORS,
-};
+// Maps, not object literals, so values such as `FORCE_COLOR=constructor` don't match `Object.prototype` keys.
+const FORCE_MAP: ReadonlyMap<string, ColorSpace> = new Map([
+  ["false", SPACE_MONO],
+  ["0", SPACE_MONO],
+  ["1", SPACE_16_COLORS],
+  ["2", SPACE_256_COLORS],
+  ["3", SPACE_TRUE_COLORS],
+]);
 
 export function getColorSpace<TGlobal = typeof globalThis>(mockGlobal?: TGlobal): ColorSpace {
   let colorSpace: ColorSpace = NO_COLOR;
@@ -61,7 +62,7 @@ export function getColorSpace<TGlobal = typeof globalThis>(mockGlobal?: TGlobal)
   // See https://force-color.org
   const FORCE_COLOR = "FORCE_COLOR";
   const forceColorValue = environment.env[FORCE_COLOR];
-  const forceColor = FORCE_MAP[forceColorValue!] ?? NO_COLOR;
+  const forceColor = FORCE_MAP.get(forceColorValue ?? "") ?? NO_COLOR;
 
   const isForceDisabled = forceColor === SPACE_MONO;
   const isForceEnabled =
@@ -84,25 +85,59 @@ export function getColorSpace<TGlobal = typeof globalThis>(mockGlobal?: TGlobal)
 
   if (isForceEnabled && colorSpace === SPACE_MONO) {
     // Forced colors don't need a TTY, so use the COLORTERM level when the terminal reports one.
-    return COLORTERM_MAP[environment.env.COLORTERM!] ?? SPACE_TRUE_COLORS;
+    return getColorSpaceByColorTerm(environment.env) ?? SPACE_TRUE_COLORS;
   }
 
   return colorSpace;
 }
 
-const COLORTERM_MAP: Record<string, ColorSpace> = {
-  "24bit": SPACE_TRUE_COLORS,
-  truecolor: SPACE_TRUE_COLORS,
-  ansi256: SPACE_256_COLORS,
-  ansi: SPACE_16_COLORS,
-};
+const COLORTERM_MAP: ReadonlyMap<string, ColorSpace> = new Map([
+  ["24bit", SPACE_TRUE_COLORS],
+  ["truecolor", SPACE_TRUE_COLORS],
+  ["ansi256", SPACE_256_COLORS],
+  ["yes", SPACE_256_COLORS],
+  ["true", SPACE_256_COLORS],
+  ["ansi", SPACE_16_COLORS],
+]);
+
+/**
+ * Reads the color level from `COLORTERM`, or returns `undefined` when it isn't set to a known value.
+ *
+ * GNU screen passes `COLORTERM=truecolor` through from the outer terminal, but it renders only 256 colors.
+ * tmux also uses `TERM=screen*`, but it renders truecolor and sets `TERM_PROGRAM=tmux`.
+ */
+function getColorSpaceByColorTerm(env: TerminalEnvironmentConfig["env"]): ColorSpace | undefined {
+  const colorTermSpace = COLORTERM_MAP.get(env.COLORTERM?.toLowerCase() ?? "");
+
+  if (
+    colorTermSpace === SPACE_TRUE_COLORS &&
+    env.TERM?.startsWith("screen") === true &&
+    env.TERM_PROGRAM !== "tmux"
+  ) {
+    return SPACE_256_COLORS;
+  }
+
+  return colorTermSpace;
+}
+
+/**
+ * `TERM` values of terminals that render truecolor, even when they don't set `COLORTERM`.
+ */
+const TRUE_COLOR_TERMS: ReadonlySet<string> = new Set([
+  "alacritty",
+  "contour",
+  "rio",
+  "wezterm",
+  "xterm-ghostty",
+  "xterm-kitty",
+]);
 
 export function getColorSpaceByRuntime(environment: TerminalEnvironmentConfig): ColorSpace {
-  const { env, isTTY, runtime } = environment;
+  const { env, isTTY, platform, runtime } = environment;
 
   // COLORTERM sets the color level. It doesn't say whether the output can show colors.
   // Terminals export it to every child process, so it is also set when output goes to a pipe or a file.
-  const colorTermSpace = COLORTERM_MAP[env.COLORTERM!];
+  const colorTermSpace = getColorSpaceByColorTerm(env);
 
   if (runtime === "browser") {
     // In a browser environment, we assume true color support.
@@ -117,8 +152,13 @@ export function getColorSpaceByRuntime(environment: TerminalEnvironmentConfig): 
 
   if (colorTermSpace !== undefined) return colorTermSpace;
 
+  // Google Cloud Shell renders truecolor but doesn't set COLORTERM.
+  if (env.GOOGLE_CLOUD_SHELL === "true") return SPACE_TRUE_COLORS;
+
   // truecolor support starts from Windows 10 build 14931 (2016-09-21), in 2024 we assume modern Windows is used
-  if (env.platform === "win32") return SPACE_TRUE_COLORS;
+  if (platform === "win32") return SPACE_TRUE_COLORS;
+
+  if (env.TERM !== undefined && TRUE_COLOR_TERMS.has(env.TERM)) return SPACE_TRUE_COLORS;
 
   // check for 256 colors after ENV variables such as TERM, COLORTERM, TERMINAL_EMULATOR etc.
   // terminals, that support 256 colors, e.g., native macOS terminal
