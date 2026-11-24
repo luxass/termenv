@@ -5,6 +5,8 @@
  * This module is not part of the public API.
  */
 
+import type { TerminalInput } from "./query";
+
 /**
  * The parts of `process` that termenv reads.
  *
@@ -15,10 +17,12 @@ export interface RuntimeProcess {
   argv?: string[];
   platform?: string;
   versions?: { node?: string };
+  stdin?: TerminalInput;
   stdout?: {
     isTTY?: boolean;
     columns?: number;
     rows?: number;
+    write?: (data: string) => unknown;
   };
 }
 

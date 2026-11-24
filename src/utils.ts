@@ -38,6 +38,7 @@ import { getTerminalEnvironment } from "./env";
 import { resolveRuntimeGlobal } from "./runtime-global";
 
 export * from "./osc";
+export * from "./query";
 export * from "./sequences";
 
 /**
