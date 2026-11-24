@@ -150,6 +150,23 @@ describe("queryBackgroundColor", () => {
     await expect(queryBackgroundColor({ ...terminal, mockGlobal })).resolves.toBeUndefined();
   });
 
+  it("ignores a color answer that arrives after the cursor position answer", async () => {
+    // Terminals answer in order, so a color answer after the cursor position belongs to something else.
+    const terminal = fakeTerminal(() => [`${CURSOR_POSITION_ANSWER}${ESC}]11;rgb:ff/ff/ff${BEL}`]);
+    await expect(queryBackgroundColor({ ...terminal, mockGlobal })).resolves.toBeUndefined();
+  });
+
+  it("stops reading when the input is too long to be an answer", async () => {
+    const terminal = fakeTerminal(() => ["x".repeat(1100)]);
+    const started = Date.now();
+
+    await expect(
+      queryBackgroundColor({ ...terminal, mockGlobal, timeout: 4000 }),
+    ).resolves.toBeUndefined();
+    // Without the length limit, the query would wait for its 4 second timeout.
+    expect(Date.now() - started).toBeLessThan(2000);
+  });
+
   it.each(["screen-256color", "tmux-256color", "dumb"])(
     "doesn't query when TERM=%s",
     async (term) => {
