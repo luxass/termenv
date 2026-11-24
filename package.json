@@ -50,7 +50,8 @@
     "test": "vitest --run",
     "test:watch": "vitest",
     "test:bun": "bun test ./test-bun",
-    "typecheck": "tsc --noEmit && tsc --noEmit --project test-bun/tsconfig.json"
+    "test:pty": "tsdown && bun test ./test-pty",
+    "typecheck": "tsc --noEmit && tsc --noEmit --project test-bun/tsconfig.json && tsc --noEmit --project test-pty/tsconfig.json"
   },
   "devDependencies": {
     "@types/bun": "catalog:types",

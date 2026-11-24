@@ -118,3 +118,45 @@ jobs:
       - name: test installed npm package
         working-directory: node_modules/.cache/bun-consumer
         run: bun ./packed-consumer.ts
+
+  test-pty:
+    # Runs the fixtures in a real pseudo-terminal opened with Bun.Terminal, which exists from Bun 1.3.5.
+    # Bun drives the PTY. The fixtures run as separate processes under Bun and Node.js.
+    name: test-pty (bun ${{ matrix.bun-version }})
+    timeout-minutes: 20
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        bun-version: ["1.3.x", "1.4.x"]
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: setup pnpm
+        uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
+
+      - name: setup node
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "24"
+          cache: pnpm
+
+      - name: install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: setup bun ${{ matrix.bun-version }}
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version: ${{ matrix.bun-version }}
+          no-cache: true
+
+      - name: run PTY tests
+        # REQUIRE_PTY makes a missing PTY a failure, so the job can't pass with every test skipped.
+        env:
+          REQUIRE_PTY: "1"
+        run: pnpm test:pty
