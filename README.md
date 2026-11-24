@@ -135,6 +135,25 @@ process.stdout.write(RESET_BACKGROUND_COLOR); // OSC 111
 `copyToClipboard` wraps the sequence for GNU screen. Also available: `setForegroundColor`, `setCursorColor`,
 `RESET_FOREGROUND_COLOR`, and `RESET_CURSOR_COLOR`.
 
+### Terminal colors
+
+Ask the terminal for its default colors (OSC 10 and OSC 11), for example to pick readable colors for a light or dark theme.
+
+```ts
+import { hasDarkBackground, queryBackgroundColor, queryForegroundColor } from "termenv/utils";
+
+console.log(await queryBackgroundColor()); // => { red: 36, green: 39, blue: 58 } | undefined
+console.log(await queryForegroundColor()); // => { red: 202, green: 211, blue: 245 } | undefined
+console.log(await hasDarkBackground()); // => true | false
+```
+
+- Queries need an interactive terminal: stdin and stdout must be TTYs. Otherwise they resolve at once without a terminal answer.
+- Terminals that don't support the query are detected at once. The `timeout` option (default 1000 ms) applies only when nothing answers.
+- When the terminal doesn't answer, the queries read `COLORFGBG`. They resolve to `undefined` when neither gives a color, and `hasDarkBackground()` then resolves to `true`.
+- GNU screen, tmux, and `TERM=dumb` aren't queried, because a multiplexer can be attached to several terminals.
+- Query before your program reads stdin. Input typed during the query is consumed, and stdin is paused again afterwards so your process can exit.
+- Don't query from a background job (`node app.js &`). Reading the terminal there stops the process.
+
 ## 📄 License
 
 Published under [MIT License](./LICENSE).
