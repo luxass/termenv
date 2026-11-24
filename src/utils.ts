@@ -37,6 +37,8 @@
 import { getTerminalEnvironment } from "./env";
 import { resolveRuntimeGlobal } from "./runtime-global";
 
+export * from "./sequences";
+
 /**
  * The ANSI escape code for resetting all attributes.
  */

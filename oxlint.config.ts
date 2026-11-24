@@ -20,6 +20,8 @@ export default defineConfig({
     "no-console": ["error", { allow: ["error"] }],
     "no-shadow": "off",
     "eslint/eqeqeq": ["warn", "always", { null: "ignore" }],
+    // Measure code size only, so detailed JSDoc doesn't count against the limit.
+    "eslint/max-lines": ["warn", { max: 300, skipComments: true, skipBlankLines: true }],
     "typescript/no-explicit-any": "error",
     "typescript/no-unnecessary-boolean-literal-compare": "off",
     "typescript/prefer-readonly-parameter-types": "off",
