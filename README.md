@@ -109,6 +109,32 @@ Also available: `cursorDown`, `cursorForward`, `cursorBack`, `cursorNextLine`, `
 `SAVE_SCREEN`, `RESTORE_SCREEN`, the other `ENABLE_MOUSE_*` / `DISABLE_MOUSE_*` modes,
 `DISABLE_BRACKETED_PASTE`, `BRACKETED_PASTE_START`, and `BRACKETED_PASTE_END`.
 
+### Hyperlinks, notifications, clipboard, and window title
+
+These builders reject control characters in URLs, titles, and colors, so a value can't end the sequence or inject another one.
+
+```ts
+import {
+  copyToClipboard,
+  hyperlink,
+  notify,
+  RESET_BACKGROUND_COLOR,
+  setBackgroundColor,
+  setWindowTitle,
+} from "termenv/utils";
+
+console.log(hyperlink("https://github.com/luxass/termenv", "termenv")); // OSC 8
+process.stdout.write(notify("Build finished", "0 errors")); // OSC 777
+process.stdout.write(copyToClipboard("npm install termenv")); // OSC 52, works over SSH
+process.stdout.write(copyToClipboard("text", { primary: true })); // X11 primary selection
+process.stdout.write(setWindowTitle("my app")); // OSC 2
+process.stdout.write(setBackgroundColor("#1e1e2e")); // OSC 11
+process.stdout.write(RESET_BACKGROUND_COLOR); // OSC 111
+```
+
+`copyToClipboard` wraps the sequence for GNU screen. Also available: `setForegroundColor`, `setCursorColor`,
+`RESET_FOREGROUND_COLOR`, and `RESET_CURSOR_COLOR`.
+
 ## 📄 License
 
 Published under [MIT License](./LICENSE).
