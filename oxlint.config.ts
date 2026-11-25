@@ -30,6 +30,18 @@ export default defineConfig({
   },
   overrides: [
     {
+      // PTY fixtures are plain JavaScript that any runtime runs as is. They aren't part of a TypeScript
+      // program, so type-aware rules see `process` and the imported dist as error types.
+      files: ["test-pty/fixtures/**/*.mjs"],
+      rules: {
+        "typescript/no-unsafe-argument": "off",
+        "typescript/no-unsafe-assignment": "off",
+        "typescript/no-unsafe-call": "off",
+        "typescript/no-unsafe-member-access": "off",
+        "typescript/no-unsafe-return": "off",
+      },
+    },
+    {
       // Keep the public generic signatures that accept cross-runtime mock globals.
       files: ["src/env.ts", "src/supports.ts"],
       rules: {
@@ -58,7 +70,7 @@ export default defineConfig({
     },
     {
       // Keep all runtime suites linted without imposing test-length or async style.
-      files: ["test/**/*", "test-bun/**/*"],
+      files: ["test/**/*", "test-bun/**/*", "test-pty/**/*"],
       rules: {
         "eslint/max-lines": "off",
         "eslint/max-lines-per-function": "off",
