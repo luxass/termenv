@@ -35,6 +35,22 @@ import { renderInTerminal } from "./terminal-screen";
 
 const plainTerminal = { process: { env: { TERM: "xterm-256color" } } };
 
+describe("renderInTerminal", () => {
+  it("reads the visible screen, not the lines that scrolled away", async () => {
+    // Three lines in a two-row terminal: "a" scrolls into the scrollback.
+    const screen = await renderInTerminal("a\r\nb\r\nc", { rows: 2 });
+    expect(screen.lines).toEqual(["b", "c"]);
+  });
+
+  it("finds hyperlinks on the visible screen after scrolling", async () => {
+    const screen = await renderInTerminal(`a\r\nb\r\n${hyperlink("https://example.com", "link")}`, {
+      rows: 2,
+    });
+    expect(screen.lines).toEqual(["b", "link"]);
+    expect(screen.hyperlinkAt(1, 0)).toBe("https://example.com");
+  });
+});
+
 describe("cursor", () => {
   it("moveCursor(row, column) moves to that row and column, starting at 1", async () => {
     const screen = await renderInTerminal(moveCursor(3, 5) + "X");
