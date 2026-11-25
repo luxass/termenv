@@ -13,6 +13,7 @@ export default defineConfig({
           name: "unit",
           exclude: [
             "test-bun/**/*.test.ts",
+            "test-pty/**/*.test.ts",
             "test/browser/**/*.test.ts",
             ...configDefaults.exclude,
           ],

@@ -192,6 +192,9 @@ catalogs:
     '@vitest/coverage-v8':
       specifier: 5.1.0
       version: 5.1.0
+    '@xterm/headless':
+      specifier: 6.0.0
+      version: 6.0.0
     playwright:
       specifier: 1.64.1
       version: 1.64.1
@@ -225,6 +228,9 @@ importers:
       '@vitest/coverage-v8':
         specifier: catalog:testing
         version: 5.1.0(@vitest/browser@5.1.0)(vitest@5.1.0)
+      '@xterm/headless':
+        specifier: catalog:testing
+        version: 6.0.0
       oxfmt:
         specifier: catalog:dev
         version: 0.76.0
@@ -859,6 +865,9 @@ packages:
 
   '@vitest/utils@5.1.0':
     resolution: {integrity: sha512-V+qgCwkvVw+s1t1S5TaoBHsLi5Sz/YmohCMoOu0mZ8ZQst2bKhRYARAQucWpVg8D0mv0x5MHcWXY5QdOsoiGBQ==}
+
+  '@xterm/headless@6.0.0':
+    resolution: {integrity: sha512-5Yj1QINYCyzrZtf8OFIHi47iQtI+0qYFPHmouEfG8dHNxbZ9Tb9YGSuLcsEwj9Z+OL75GJqPyJbyoFer80a2Hw==}
 
   '@yuku-core/binding-android-arm64@0.19.0':
     resolution: {integrity: sha512-wdL2XmTiZixAOaHk9Z0JJZ8u9Qm8d333Zjpc6gaxXFX+UR5BlsfxZ7a2+2Rm71pamppsPYGUGFq2oVLbh6DISw==}
@@ -1798,6 +1807,8 @@ snapshots:
       '@vitest/pretty-format': 5.1.0
       convert-source-map: 2.0.0
       tinyrainbow: 3.2.0
+
+  '@xterm/headless@6.0.0': {}
 
   '@yuku-core/binding-android-arm64@0.19.0':
     optional: true

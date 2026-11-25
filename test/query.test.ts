@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import type { TerminalInput, TerminalOutput } from "../src/utils";
 import { hasDarkBackground, queryBackgroundColor, queryForegroundColor } from "../src/utils";
@@ -145,9 +145,57 @@ describe("queryBackgroundColor", () => {
     expect(terminal.rawModes).toEqual([true, false]);
   });
 
+  it("gives up exactly when the timeout option says", async () => {
+    vi.useFakeTimers();
+    try {
+      const terminal = fakeTerminal(() => []);
+      let settled = false;
+      const query = queryBackgroundColor({ ...terminal, mockGlobal, timeout: 20 }).then((value) => {
+        settled = true;
+        return value;
+      });
+
+      await vi.advanceTimersByTimeAsync(19);
+      expect(settled).toBe(false);
+      await vi.advanceTimersByTimeAsync(1);
+      expect(settled).toBe(true);
+      await expect(query).resolves.toBeUndefined();
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
   it("ignores an answer to a different color query", async () => {
     const terminal = fakeTerminal(() => [`${ESC}]10;rgb:ff/ff/ff${BEL}`, CURSOR_POSITION_ANSWER]);
     await expect(queryBackgroundColor({ ...terminal, mockGlobal })).resolves.toBeUndefined();
+  });
+
+  it("ignores a color answer that arrives after the cursor position answer", async () => {
+    // Terminals answer in order, so a color answer after the cursor position belongs to something else.
+    const terminal = fakeTerminal(() => [`${CURSOR_POSITION_ANSWER}${ESC}]11;rgb:ff/ff/ff${BEL}`]);
+    await expect(queryBackgroundColor({ ...terminal, mockGlobal })).resolves.toBeUndefined();
+  });
+
+  it("keeps waiting for the cursor position answer after its own color answer", async () => {
+    // Without the cursor position answer, the query can't know that the color answer is meant for it.
+    // A query that finished on the color answer alone would also leave the late cursor answer unread,
+    // so it would show up as garbage in the user's terminal.
+    const terminal = fakeTerminal(() => [`${ESC}]11;rgb:ff/ff/ff${BEL}`]);
+
+    await expect(
+      queryBackgroundColor({ ...terminal, mockGlobal, timeout: 50 }),
+    ).resolves.toBeUndefined();
+  });
+
+  it("stops reading when the input is too long to be an answer", async () => {
+    const terminal = fakeTerminal(() => ["x".repeat(1100)]);
+    const started = Date.now();
+
+    await expect(
+      queryBackgroundColor({ ...terminal, mockGlobal, timeout: 4000 }),
+    ).resolves.toBeUndefined();
+    // Without the length limit, the query would wait for its 4 second timeout.
+    expect(Date.now() - started).toBeLessThan(2000);
   });
 
   it.each(["screen-256color", "tmux-256color", "dumb"])(
