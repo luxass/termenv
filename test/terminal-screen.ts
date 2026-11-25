@@ -9,7 +9,7 @@
 import { Terminal } from "@xterm/headless";
 
 export interface TerminalScreen {
-  /** The text of each row, without trailing spaces. */
+  /** The text of each row on the visible screen, without trailing spaces. */
   lines: string[];
 
   /** The cursor position, starting at 0, and whether the cursor is visible. */
@@ -27,7 +27,7 @@ export interface TerminalScreen {
   /** The last window title the terminal received, or `undefined`. */
   title: string | undefined;
 
-  /** Returns the URL of the hyperlink at a cell, or `null` when the cell has no link. */
+  /** Returns the URL of the hyperlink at a cell on the visible screen, or `null` when the cell has no link. */
   hyperlinkAt: (row: number, col: number) => string | null;
 
   /** The payloads the terminal received for each recorded OSC code, in order. */
@@ -82,10 +82,12 @@ export async function renderInTerminal(
   });
 
   const active = terminal.buffer.active;
+  // Buffer line 0 is the oldest line in the scrollback. The visible screen starts at `viewportY`.
+  const firstVisibleLine = active.viewportY;
   const core = (terminal as unknown as { _core: XtermCore })._core;
   const lines = Array.from(
     { length: terminal.rows },
-    (_, row) => active.getLine(row)?.translateToString(true) ?? "",
+    (_, row) => active.getLine(firstVisibleLine + row)?.translateToString(true) ?? "",
   );
 
   return {
@@ -96,7 +98,7 @@ export async function renderInTerminal(
     bracketedPaste: terminal.modes.bracketedPasteMode,
     title,
     hyperlinkAt(row, col) {
-      const cell = active.getLine(row)?.getCell(col) as XtermCell | undefined;
+      const cell = active.getLine(firstVisibleLine + row)?.getCell(col) as XtermCell | undefined;
       const linkId = cell?.extended?.urlId;
       if (linkId === undefined || linkId === 0) return null;
       return core._oscLinkService.getLinkData(linkId)?.uri ?? null;
