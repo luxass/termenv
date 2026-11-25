@@ -105,14 +105,14 @@ describe("lines", () => {
     ]);
   });
 
-  it("changeScrollingRegion keeps rows outside the region in place", async () => {
-    // Rows 2 to 6 scroll. Row 1 is a fixed header.
+  it("changeScrollingRegion scrolls only the rows from top to bottom", async () => {
+    // Rows 2 to 5 scroll. Row 1 is a fixed header and row 6 a fixed footer.
+    // The region ends above the last row, so a missing bottom margin, which defaults to the last row, fails.
     const screen = await renderInTerminal(
-      `header${changeScrollingRegion(2, 6)}${moveCursor(6, 1)}1\n2\n3`,
+      `header${moveCursor(6, 1)}footer${changeScrollingRegion(2, 5)}${moveCursor(5, 1)}1\r\n2\r\n3`,
       { rows: 6 },
     );
-    expect(screen.lines[0]).toBe("header");
-    expect(screen.lines[5]).toContain("3");
+    expect(screen.lines).toEqual(["header", "", "1", "2", "3", "footer"]);
   });
 });
 
