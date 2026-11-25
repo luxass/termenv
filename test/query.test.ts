@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import type { TerminalInput, TerminalOutput } from "../src/utils";
 import { hasDarkBackground, queryBackgroundColor, queryForegroundColor } from "../src/utils";
@@ -143,6 +143,26 @@ describe("queryBackgroundColor", () => {
     ).resolves.toBeUndefined();
     expect(terminal.listenerCount()).toBe(0);
     expect(terminal.rawModes).toEqual([true, false]);
+  });
+
+  it("gives up exactly when the timeout option says", async () => {
+    vi.useFakeTimers();
+    try {
+      const terminal = fakeTerminal(() => []);
+      let settled = false;
+      const query = queryBackgroundColor({ ...terminal, mockGlobal, timeout: 20 }).then((value) => {
+        settled = true;
+        return value;
+      });
+
+      await vi.advanceTimersByTimeAsync(19);
+      expect(settled).toBe(false);
+      await vi.advanceTimersByTimeAsync(1);
+      expect(settled).toBe(true);
+      await expect(query).resolves.toBeUndefined();
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
   it("ignores an answer to a different color query", async () => {
