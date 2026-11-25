@@ -156,6 +156,17 @@ describe("queryBackgroundColor", () => {
     await expect(queryBackgroundColor({ ...terminal, mockGlobal })).resolves.toBeUndefined();
   });
 
+  it("keeps waiting for the cursor position answer after its own color answer", async () => {
+    // Without the cursor position answer, the query can't know that the color answer is meant for it.
+    // A query that finished on the color answer alone would also leave the late cursor answer unread,
+    // so it would show up as garbage in the user's terminal.
+    const terminal = fakeTerminal(() => [`${ESC}]11;rgb:ff/ff/ff${BEL}`]);
+
+    await expect(
+      queryBackgroundColor({ ...terminal, mockGlobal, timeout: 50 }),
+    ).resolves.toBeUndefined();
+  });
+
   it("stops reading when the input is too long to be an answer", async () => {
     const terminal = fakeTerminal(() => ["x".repeat(1100)]);
     const started = Date.now();
